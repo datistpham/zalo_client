@@ -1,25 +1,70 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import React, { useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Login from "./Component/Login/Login";
+import Signup from "./Component/Signup/Signup";
+import { SERVER_URL } from "./config/config";
+import Cookies from "js-cookie";
+import { useState } from "react";
+import { createContext } from "react";
+import Home from "./Component/Home/Home";
+import SocketContainer from "./SocketContainer/SocketContainer";
 
-function App() {
+export const AppContext= createContext()
+const App = () => {
+  const [data, setData] = useState();
+  const [auth, setAuth] = useState();
+  useEffect(() => {
+    (async () => {
+      if(Cookies.get("uid")) {
+        const res = await axios({
+          url: `${SERVER_URL}/api/users/${Cookies.get("uid")}`,
+          headers: {
+            Authorization: `Bearer ${Cookies.get("accessToken")}`,
+          },
+          method: "get",
+          params: {
+            id: Cookies.get("uid"),
+          },
+        });
+        const result = await res.data;
+        if (res.status === 200) {
+          setAuth(() => true);
+        } else {
+          setAuth(() => false);
+        }
+        return setData(result);
+      }
+      else {
+        setAuth(()=> false)
+      }
+    })();
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <SocketContainer>
+
+      <AppContext.Provider value={{data, auth,setData}}>
+        <BrowserRouter>
+          <Routes>
+            {
+              auth=== true && <>
+                <Route path={"/*"} element={<Home />} />
+                <Route path={"/signup"} element={<Navigate to={"/"} />} />
+                <Route path={"/login"} element={<Navigate to={"/"} />} />
+              </>
+            }
+            {
+              auth=== false && <>
+                <Route path={"/"} element=<Navigate to={"/login"} /> />
+                <Route path={"/signup"} element={<Signup />} />
+                <Route path={"/login"} element={<Login />} />
+              </>
+            }
+          </Routes>
+        </BrowserRouter>
+      </AppContext.Provider>
+    </SocketContainer>
   );
-}
+};
 
 export default App;
