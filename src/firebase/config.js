@@ -27,11 +27,8 @@ export default app;
 
 export const uploadImageClient = async (file) => {
   const storage = getStorage();
-  const metadata = {
-    contentType: "image/jpeg",
-  };
   const storageRef = ref(storage, "images/" + file.name);
-  const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+  const uploadTask = uploadBytesResumable(storageRef, file);
   return new Promise((resolve, reject)=> {
     uploadTask.on(
       "state_changed",

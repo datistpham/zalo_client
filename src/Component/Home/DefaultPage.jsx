@@ -3,8 +3,17 @@ import SearchAndList from '../SearchAndList/SearchAndList'
 
 const DefaultPage = (props) => {
   return (
-    <div>
-        <SearchAndList is_default_page={true} />
+    <div className={"fkdjkfjkdlsasa"} style={{ display: "flex" }}>
+      <SearchAndList is_default_page={true} />
+      <DefaultWebpage />
+    </div>
+  )
+}
+
+const DefaultWebpage= (props)=> {
+  return (
+    <div className={"jskdjskfjkldjasadsa"} style={{flex: "1 1 0"}}>
+
     </div>
   )
 }

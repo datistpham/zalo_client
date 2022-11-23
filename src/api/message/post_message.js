@@ -2,19 +2,20 @@ import axios from "axios"
 import Cookies from "js-cookie"
 import { SERVER_URL } from "../../config/config"
 
-const cancel_request_make_friend_from_me = async (id, setChange) => {
+const post_message= async (sender, conversation, key, message, roomId, type_message)=> {
     const res= await axios({
-        url: `${SERVER_URL}/api/users//cancel-add-friend/${id}`,
+        url: SERVER_URL+ "/api/messages",
         method: "post",
+        data: {
+            sender, conversation, key, message, roomId, type_message
+        },
         headers: {
             "authorization": "Bearer "+ Cookies.get("accessToken")
-        },
-        data: {
-            userId: Cookies.get("uid")
         }
     })
     const result= await res.data
-    return setChange(prev=> !prev)
+    return (result)
+
 }
 
-export default cancel_request_make_friend_from_me
+export default post_message

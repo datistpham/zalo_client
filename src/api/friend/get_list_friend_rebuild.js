@@ -2,9 +2,9 @@ import axios from "axios"
 import Cookies from "js-cookie"
 import { SERVER_URL } from "../../config/config"
 
-const get_list_friends= async (id, setData)=> {
+const get_list_friend_rebuild = async (setData) => {
     const res= await axios({
-        url: `${SERVER_URL}/api/users/get-list-user-send-request-add-friend-of-me/${Cookies.get("uid")}`,
+        url: SERVER_URL+ "/api/users/friends/"+ Cookies.get("uid"),
         method: "get",
         headers: {
             "authorization": "Bearer "+ Cookies.get("accessToken")
@@ -14,4 +14,4 @@ const get_list_friends= async (id, setData)=> {
     return setData(result)
 }
 
-export default get_list_friends
+export default get_list_friend_rebuild

@@ -9,11 +9,13 @@ import { useState } from "react";
 import { createContext } from "react";
 import Home from "./Component/Home/Home";
 import SocketContainer from "./SocketContainer/SocketContainer";
+import ForgotPassword from "./Component/ForgotPassword/ForgotPassword";
 
 export const AppContext= createContext()
 const App = () => {
   const [data, setData] = useState();
   const [auth, setAuth] = useState();
+  const [change, setChange]= useState(false)
   useEffect(() => {
     (async () => {
       if(Cookies.get("uid")) {
@@ -39,11 +41,10 @@ const App = () => {
         setAuth(()=> false)
       }
     })();
-  }, []);
+  }, [change]);
   return (
     <SocketContainer>
-
-      <AppContext.Provider value={{data, auth,setData}}>
+      <AppContext.Provider value={{data, auth,setData, setChange}}>
         <BrowserRouter>
           <Routes>
             {
@@ -55,9 +56,10 @@ const App = () => {
             }
             {
               auth=== false && <>
-                <Route path={"/"} element=<Navigate to={"/login"} /> />
+                <Route path={"/*"} element=<Navigate to={"/login"} /> />
                 <Route path={"/signup"} element={<Signup />} />
                 <Route path={"/login"} element={<Login />} />
+                <Route path={"/forgot-password"} element={<ForgotPassword />} />
               </>
             }
           </Routes>

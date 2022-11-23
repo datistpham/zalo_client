@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FaUserAlt } from "react-icons/fa";
 import { BsPhoneFill } from "react-icons/bs";
-import { AiTwotoneLock } from "react-icons/ai";
+import { AiTwotoneLock, AiOutlineMail } from "react-icons/ai";
 
 import * as yup from "yup";
 import Background from "../Background/Background";
@@ -41,6 +41,7 @@ const Signup = () => {
   const [username, setUsername] = useState(() => "");
   const [phoneNumber, setPhoneNumber] = useState(() => "");
   const [password, setPassword] = useState(() => "");
+  const [email, setEmail]= useState(()=> "")
   const [confirmPassword, setConfirmPassword] = useState(() => "");
   const [data, setData] = useState();
 
@@ -81,10 +82,20 @@ const Signup = () => {
                 <input
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   type="text"
-                  placeholder="Số điện thoại hoặc email"
+                  placeholder="Số điện thoại"
                 ></input>
                 <span>
                   <BsPhoneFill />
+                </span>
+              </div>
+              <div className={styles.register_form_input}>
+                <input
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  placeholder="Email"
+                ></input>
+                <span>
+                  <AiOutlineMail />
                 </span>
               </div>
               <div className={styles.register_form_input}>
@@ -112,7 +123,7 @@ const Signup = () => {
                 </span>
               </div>
               <button
-                onClick={() => signup(username, phoneNumber, password, setData)}
+                onClick={() => signup(username, phoneNumber, password,email, setData)}
                 className={styles.btn}
               >
                 Đăng kí

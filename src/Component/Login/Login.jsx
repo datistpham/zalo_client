@@ -24,18 +24,11 @@ const Login = (props) => {
     // password: yup.string().min(8, 'Mật khẩu phải trên 8 kí tự').required(),
   });
   const {
-    register,
     handleSubmit,
-    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const [pass, setPass] = useState("");
-  const [errorMessage, setErrorMessage] = useState(errors?.phone);
-  const [repeatPass, setRepeatPass] = useState("");
-
-  const [countDown, setCountDown] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState(() => "");
   const [password, setPassword] = useState(() => "");
   const [data, setData] = useState();
@@ -93,6 +86,7 @@ const Login = (props) => {
               >
                 Đăng nhập
               </button>
+              <div onClick={()=> navigate("/forgot-password")} style={{ width: "100%", textAlign: "right", fontSize: 14, cursor: "pointer"}}>Quên mật khẩu</div>
               <div className={styles.toLogin}>
                 <Link to="/signup">Đăng ký</Link>
               </div>

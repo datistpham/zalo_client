@@ -13,9 +13,9 @@ const Avatar = (props) => {
     <div className={"sjdkajdkjfadas"} style={{width: '100%', display: "flex", justifyContent: 'center', alignItems: "center"}}>
         <div onClick={()=> props.setOpen(prev=> !prev)} className={'sdsjfkjdkaldjas'} style={{width: 60, height: 60, display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "50%", background: "#fff", position: "relative", cursor: "pointer"}}>
           {
-            check=== true ? <img src={imgPreview.preview || "https://s120-ava-talk.zadn.vn/6/6/0/b/1/120/696c7fe20c77ecc03d2ea8c82ffa18c3.jpg"} alt="Open" className={"dsjkhjfsjkfjkdlas"} style={{display: "flex", justifyContent: "center", alignItems: "center", objectFit: "cover", width: "100%", height: "100%",position: "relative", zIndex: 12, borderRadius: "50%"}} />: 
+            check=== true ? <img src={imgPreview.preview || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} alt="Open" className={"dsjkhjfsjkfjkdlas"} style={{display: "flex", justifyContent: "center", alignItems: "center", objectFit: "cover", width: "100%", height: "100%",position: "relative", zIndex: 12, borderRadius: "50%"}} />: 
             
-            <img src={props.avatar || "https://s120-ava-talk.zadn.vn/6/6/0/b/1/120/696c7fe20c77ecc03d2ea8c82ffa18c3.jpg"} alt="Open" className={"dsjkhjfsjkfjkdlas"} style={{display: "flex", justifyContent: "center", alignItems: "center", objectFit: "cover", width: "100%", height: "100%",position: "relative", zIndex: 12, borderRadius: "50%"}} />
+            <img src={props.avatar || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} alt="Open" className={"dsjkhjfsjkfjkdlas"} style={{display: "flex", justifyContent: "center", alignItems: "center", objectFit: "cover", width: "100%", height: "100%",position: "relative", zIndex: 12, borderRadius: "50%"}} />
           }
           {
             props?.is_edit=== true &&

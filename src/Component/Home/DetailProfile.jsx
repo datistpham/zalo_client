@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import update_info_user from '../../api/update_info_user'
 import Cookies from 'js-cookie'
-import logout from '../../api/logout'
+import { Button } from 'react-bootstrap'
 
 const DetailProfile = (props) => {
     const {data, setData}= useContext(AppContext)
@@ -45,18 +45,10 @@ const DetailProfile = (props) => {
                     <br />
                     <br />
                     <div className={"fjldjskdjkslajkalsas"} style={{width: '100%', display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
-                        <button onClick={()=> setUpdateInfo(()=> true)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#2e89ff", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px", width :'100%'}}>
+                        <Button variant={"primary"} onClick={()=> setUpdateInfo(()=> true)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#2e89ff", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px", width :'100%'}}>
                             Cập nhật thông tin 
-                        </button>
+                        </Button>
                         <br />
-                        <button onClick={logout} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#f2f0f5", cursor: "pointer", color: "#000", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px", width :'100%'}}>
-                            Đăng xuất
-                        </button>
-                        <br />
-                        {/*  */}
-                        <button onClick={()=> setUpdateInfo(()=> false)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#f00", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px", width :'100%'}}>
-                            Xóa tài khoản
-                        </button>
                     </div>
                 </div> 
             }
