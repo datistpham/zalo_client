@@ -2,13 +2,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BsPhoneFill, BsCode } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Background from "../Background/Background";
 import styles from "../Signup/Signup.module.sass";
 import * as yup from "yup";
-import { Button } from "react-bootstrap";
+import { Button, ButtonGroup } from "react-bootstrap";
 import forgot_password from "../../api/forgot_password";
 import "./style.sass";
+import confirm_code from "../../api/confirm_code";
+import { AiTwotoneLock } from "react-icons/ai";
+import reset_password from "../../api/reset_password";
 
 const ForgotPassword = (props) => {
   // eslint-disable-next-line
@@ -32,7 +35,9 @@ const ForgotPassword = (props) => {
   const [confirmCode, setConfirmCode] = useState();
 
   const [phoneNumber, setPhoneNumber] = useState(() => "");
-
+  const [status, setStatus] = useState();
+  const [password, setPassword] = useState();
+  const [confirmPassword, setConfirmPassword] = useState();
   const onSubmit = async (data) => {
     // if (pass === repeatPass) {
     // await dispatch(registerUserRequest(data, () => {
@@ -96,9 +101,62 @@ const ForgotPassword = (props) => {
                       <BsCode />
                     </span>
                   </div>
-                  <div className={`${styles.register_form_input} fjkadjksjksjdasaa`}>
-                    <Button color={"primary"}>Gửi</Button>
+                  <div
+                    className={`${styles.register_form_input} fjkadjksjksjdasaa`}
+                  >
+                    <Button
+                      onClick={() =>
+                        confirm_code(phoneNumber, confirmCode, setStatus)
+                      }
+                      color={"primary"}
+                    >
+                      Gửi
+                    </Button>
                   </div>
+                  {status?.verify === true && (
+                    <>
+                      <div className={styles.register_form_input}>
+                        <input
+                          type="password"
+                          placeholder="Mật khẩu"
+                          required
+                          onChange={(e) => setPassword(e.target.value)}
+                        ></input>
+                        <span>
+                          {" "}
+                          <AiTwotoneLock />
+                        </span>
+                      </div>
+                      <div className={styles.register_form_input}>
+                        <input
+                          type="password"
+                          placeholder="Nhập lại mật khẩu"
+                          required
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                        ></input>
+                        <span>
+                          {" "}
+                          <AiTwotoneLock />
+                        </span>
+                      </div>
+                      <div className={"fjkadjksjksjdasaa"}>
+                        <Button
+                          onClick={() =>
+                            reset_password(phoneNumber, password, navigate)
+                          }
+                          className={"fjkadjksjksjdasaa"}
+                          color={"primary"}
+                        >
+                          Cập nhật
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                  {status?.verify === false && (
+                    <div className={"fjkadjksjksjdasaa"}>
+                      Mã xác thực không chính xác
+                    </div>
+                  )}
                 </div>
               )}
             </form>

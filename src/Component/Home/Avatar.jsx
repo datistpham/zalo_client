@@ -4,10 +4,13 @@ import {AiFillCamera } from "react-icons/ai"
 
 const Avatar = (props) => {
   const [imgPreview, setImagePreview]= useState()
-  const check= imgPreview ?true :  false
+  const check= imgPreview ? true :  false
   const imgPreviewFunction= (e)=> {
     setImagePreview({img: e.target.files[0], preview: URL.createObjectURL(e.target.files[0]), key: e.target.files[0].lastModified})
     props.setNewProfilePicture(e.target.files[0])
+    if(props?.setChangeAvatar) {
+      props?.setChangeAvatar(()=> true)
+    }
   }
   return (
     <div className={"sjdkajdkjfadas"} style={{width: '100%', display: "flex", justifyContent: 'center', alignItems: "center"}}>

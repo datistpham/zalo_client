@@ -2,20 +2,19 @@ import axios from "axios"
 import Cookies from "js-cookie"
 import { SERVER_URL } from "../../config/config"
 
-const post_message= async (sender, conversation, key, message, roomId, type_message, name_file)=> {
+const add_member_to_group = async (conversationId, newMember, setData) => {
     const res= await axios({
-        url: SERVER_URL+ "/api/messages",
+        url: SERVER_URL+ "/api/conversations/add-member-group/"+ conversationId,
         method: "post",
-        data: {
-            sender, conversation, key, message, roomId, type_message, name_file
-        },
         headers: {
             "authorization": "Bearer "+ Cookies.get("accessToken")
+        },
+        data: {
+            member: newMember
         }
     })
     const result= await res.data
-    return (result)
-
+    return setData(result)
 }
 
-export default post_message
+export default add_member_to_group

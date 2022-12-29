@@ -4,18 +4,51 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import get_list_conversation from '../../api/coversation/get_list_conversation'
+import Fuse from 'fuse.js'
 
 const List = (props) => {
     const [data, setData]= useState([])
     useEffect(()=> {
         get_list_conversation(setData)
     }, [props?.change, props.is_friend_page])
+
+    const options = {
+        // isCaseSensitive: false,
+        // includeScore: false,
+        // shouldSort: true,
+        // includeMatches: false,
+        // findAllMatches: false,
+        // minMatchCharLength: 1,
+        // location: 0,
+        // threshold: 0.6,
+        // distance: 100,
+        // useExtendedSearch: false,
+        // ignoreLocation: false,
+        // ignoreFieldNorm: false,
+        // fieldNormWeight: 1,
+        keys: [
+            { name: 'label', getFn: (book) => book.label },
+            { name: 'username', getFn: (book) => book.member.username }
+          ]
+      };
+      
+      const fuse = new Fuse(data, options);
+      
+      // Change the pattern
   return (
     <div className={"skdjkfjdkdjsdas"}style={{width:" 100%", height: "calc(100% - 60px)", overflow: "auto"}}>
        {
         <div style={{textAlign: "center"}}>
-            {props?.isSearching=== true && props?.data?.length <=0 && "Không tìm thấy kết quả phù hợp"}
+            {props?.isSearching=== true && props?.data?.length <=0 && props?.search_conversation!== true && "Không tìm thấy kết quả phù hợp"}
         </div>
+       }
+       {
+        <div style={{textAlign: "center"}}>
+            {props?.isSearching=== true && props?.data?.length <=0 && props?.search_conversation=== true && fuse.search(props?.searchQuery).length <= 0&& "Không tìm thấy kết quả phù hợp"}
+        </div>
+       }
+       {
+            props?.isSearching=== true && props?.searchQuery?.length > 0 && data?.length > 0 && fuse.search(props?.searchQuery)?.map((item, key)=> <ItemList key={key} {...item.item} />)
        }
        {
         <div style={{textAlign: "center"}}>

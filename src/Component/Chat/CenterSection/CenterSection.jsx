@@ -65,7 +65,9 @@ const ComponentMessage= (props)=> {
             <div className={"dfkdsdhsjkfhjkhdadss"} style={{position: "relative"}}>
                 <Avatar {...props} />
                 <Text {...props} setOpen={setOpen} reValue={reValue} />
-                {open=== true && <OptionComponentMessage recallMessage={recallMessage} removeMessage={removeMessage} />}
+                <div style={{position: "relative"}}>
+                    {open=== true && <OptionComponentMessage recallMessage={recallMessage} removeMessage={removeMessage} sender={props?.sender?._id} me={Cookies.get("uid")} />}
+                </div>
             </div>
         </div>
     )
@@ -73,17 +75,31 @@ const ComponentMessage= (props)=> {
 }
 
 const OptionComponentMessage= (props)=> {
+    if(props?.sender === props?.me) {
+        return (
+            <div className={"fdkdjskjfkgsdA"} style={{alignSelf: "center", background: "#f2f0f5", borderRadius: 5, padding: 10,gap: 10, display: "flex", justifyContent:" center", alignItems: "center", position: "absolute",right: "100%", top: "50%", transform: "translate(-50%, 0)"}}>
+                <div onClick={props?.recallMessage} title={"Thu hồi"} style={{display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer"}}>
+                    <IoIosRemoveCircle style={{width: 18, height: 18}} />
+                </div>
+                <div onClick={props?.removeMessage} title={"Gỡ bỏ"} style={{display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer"}} >
+                    <MdDelete style={{width: 18, height: 18}} />
+                </div>
+            </div>
+        )
 
-    return (
-        <div className={"fdkdjskjfkgsdA"} style={{alignSelf: "center", background: "#f2f0f5", borderRadius: 5, padding: 10,gap: 10, display: "flex", justifyContent:" center", alignItems: "center"}}>
-            <div onClick={props?.recallMessage} title={"Thu hồi"} style={{display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer"}}>
-                <IoIosRemoveCircle style={{width: 18, height: 18}} />
+    }
+    else {
+        return (
+            <div className={"fdkdjskjfkgsdA"} style={{alignSelf: "center", background: "#f2f0f5", borderRadius: 5, padding: 10,gap: 10, display: "flex", justifyContent:" center", alignItems: "center", position: "absolute",left: "100%", top: "50%", transform: "translate(50%, 0)"}}>
+                <div onClick={props?.recallMessage} title={"Thu hồi"} style={{display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer"}}>
+                    <IoIosRemoveCircle style={{width: 18, height: 18}} />
+                </div>
+                <div onClick={props?.removeMessage} title={"Gỡ bỏ"} style={{display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer"}} >
+                    <MdDelete style={{width: 18, height: 18}} />
+                </div>
             </div>
-            <div onClick={props?.removeMessage} title={"Gỡ bỏ"} style={{display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer"}} >
-                <MdDelete style={{width: 18, height: 18}} />
-            </div>
-        </div>
-    )
+        )
+    }
 }
 
 const Avatar= (props)=> {
@@ -102,14 +118,22 @@ const Text= (props)=> {
                 {
                     <div className={"fjdkdjskjaskjasasas"} style={{maxWidth: "100%", wordBreak: "break-word"}}>{props?.reValue?.message}</div>
                 }
-            </> :
-
+                </> 
+                :
                 <>
                 {
                     props?.type_message=== "text" && <div className={"fjdkdjskjaskjasasas"} style={{maxWidth: "100%", wordBreak: "break-word"}}>{props?.message}</div>
                 }
                 {
                     props?.type_message=== "image" && <img alt={""} src={props?.message} className={"fjdkdjskjaskjasasas"} style={{maxWidth: "100%", height: "auto", aspectRatio: 16 / 9, borderRadius: 5}} />
+                }
+                {
+                    props?.type_message=== "file" && <a style={{textDecoration: "none"}} rel="noreferrer"  target={"_blank"} href={props?.message}>
+                        <div style={{wordBreak: "break-all", color: "#fff", textAlign: "left", textDecoration: "underline"}}>{props?.name_file}</div>
+                    </a>
+                }
+                {
+                    props?.type_message=== "audio" && <audio src={props?.message} controls={true}></audio>
                 }
             </>
             }

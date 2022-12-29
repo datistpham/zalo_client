@@ -19,7 +19,7 @@ const TypingText = (props) => {
   }
   return (
     <div className={"fjdkfjkdjdkjskds"} style={{flex: "1 1 0", display: "flex", justifyContent:" center", alignItems: "center"}}>
-      <input onChange={f} value={props.contentText} type="text" style={{width: "100%", height: 40, outlineColor: "#2e89ff", border: "1px solid #e7e7e7", borderRadius: 80, padding: 10}} placeholder={"Typing whatever you want"} />
+      <input onChange={f} value={props.contentText} type="text" style={{width: "100%", height: 40, outlineColor: "#2e89ff", border: "1px solid #e7e7e7", borderRadius: 80, padding: 10}} placeholder={"Nhập tin nhắn..."} />
     </div>
   )
 }

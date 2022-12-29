@@ -24,6 +24,7 @@ const SearchAndList = (props) => {
   const isSearching=searchQuery.length > 0 ? true : false
   const [change, setChange]= useState(false)
   const [data, setData]= useState()
+  
   return (
     <div className={"fkjlasdjsklsajaksas"} style={{width: 350, padding: '16px 0 0 0',height: "100vh", borderRight: "1px solid #e7e7e7"}}>
         <SearchBar setChange={setChange} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setData={setData} />
@@ -33,13 +34,14 @@ const SearchAndList = (props) => {
         {/*  */}
         {
             props.is_chat_page=== true &&
-            <List change={change} is_friend_page={props.is_friend_page} isSearching={isSearching} data={data} />
+            <List search_conversation={true} searchQuery={searchQuery} change={change} is_friend_page={props.is_friend_page} isSearching={isSearching} data={data} />
         }
     </div>
   )
 }
 
 const SearchBar= (props)=> {
+    
     return (
         <div className={"fmkldjskldjklfsass"} style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", position: "relative", marginBottom: 20, padding: "0 16px"}}>
             <MainSearch {...props} />
@@ -62,8 +64,8 @@ const MainSearch= (props)=> {
 const AddFriends= (props)=> {
     const [open, setOpen]= useState(()=> false)
     return (
-        <div title={"Thêm bạn"} className={"fkjdjkshklsajass"}style={{cursor: "pointer", width: 40, height: 40, display: "flex", justifyContent:"center", alignItems: "center"}}>
-            <AiOutlineUserAdd onClick={()=> setOpen(()=> true)} />
+        <div title={"Thêm bạn"} className={"fkjdjkshklsajass"}style={{cursor: "pointer", width: 40, height: 40, display: "flex", justifyContent:"center", alignItems: "center", marginLeft: 16}}>
+            <AiOutlineUserAdd style={{width: 32, height: 32}} onClick={()=> setOpen(()=> true)} />
             {open=== true && <PopupAddFriends open={open} setOpen={setOpen} />}
         </div>
     )
@@ -72,8 +74,8 @@ const AddFriends= (props)=> {
 const CreateNewGroup= (props)=> {
     const [open, setOpen]= useState(()=> false)
     return (
-        <div title={"Tạo nhóm"} className={"fdlkjsjdaklsjfdkaljsa"} style={{cursor: "pointer",width :40, height: 40, display: "flex", justifyContent: "center", alignItems: "center"}}>
-            <AiOutlineUsergroupAdd onClick={()=> setOpen(()=> true)} />
+        <div title={"Tạo nhóm"} className={"fdlkjsjdaklsjfdkaljsa"} style={{cursor: "pointer",width :40, height: 40, display: "flex", justifyContent: "center", alignItems: "center", marginLeft: 16}}>
+            <AiOutlineUsergroupAdd  style={{width: 32, height: 32}} onClick={()=> setOpen(()=> true)} />
             {open=== true && <PopupMakeConversation setChange={props?.setChange} open={open} setOpen={setOpen} />}
         </div>
     )
@@ -91,7 +93,7 @@ export const PopupAddFriends= (props)=> {
                         <div className={"jdjadkjgkddssa"} style={{width: '100%', height: 68, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                             <strong>Thêm bạn</strong>
                             <div style={{display: "flex", justifyContent: 'center', alignItems: "center", cursor: "pointer"}} onClick={()=> props.setOpen(()=> false)}>
-                                <GrClose />
+                                <GrClose  />
                             </div>
                         </div>
                         {

@@ -18,7 +18,7 @@ const DetailProfile = (props) => {
     const [newProfilePicture, setNewProfilePicture]= useState()
     const [newGender, setNewGender]= useState()
     const [updateData, setUpdateData]= useState()
-    
+    const [changeAvatar, setChangeAvatar]= useState(false)
     useEffect(()=> {
         setNewGender(()=> data?.gender?.toString())
         setNewUsername(()=> data?.username)
@@ -39,7 +39,7 @@ const DetailProfile = (props) => {
                         </div>
                     </div>
                     <CoverPhoto coverPhoto={data?.coverPicture} />
-                    <Avatar setOpen={()=> {}} avatar={newProfilePicture} />
+                    <Avatar setChangeAvatar={setChangeAvatar} setOpen={()=> {}} avatar={newProfilePicture} />
                     <NameProfile username={data?.username} />
                     <ProfileInfo user={data} />
                     <br />
@@ -89,7 +89,7 @@ const DetailProfile = (props) => {
                                 <button onClick={()=> props.setOpen(()=> false)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#5555", cursor: "pointer", color: "#000", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px"}}>
                                     Hủy
                                 </button>
-                                <button onClick={()=> update_info_user(Cookies.get("uid"), newUsername, newProfilePicture, newGender, setUpdateData, setData)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#2e89ff", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px"}}>
+                                <button onClick={()=> update_info_user(Cookies.get("uid"), newUsername, newProfilePicture, newGender, setUpdateData, setData, changeAvatar)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#2e89ff", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px"}}>
                                     Cập nhật
                                 </button>
                             </>
