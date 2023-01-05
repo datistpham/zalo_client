@@ -10,35 +10,50 @@ import axios from "axios";
 import { SERVER_URL } from "../../config/config";
 const VideoCallComponent = () => {
     const appId = "019c2968a3da4efab5e709e7886b86c8"; //ENTER APP ID HERE
+    const [uid, setUid]= useState("")
     const appCertificate = "cfc8747ffd6040ad89bf114dcded44b5"
-    const [token, setToken]= useState("007eJxTYJhWsK7vbu5XVlVdScXZGtPf6iUKKd/weeHUPL3a4nDcI1sFBgNDy2QjSzOLROOURJPUtMQk01RzA8tUcwsLsyQLs2SLvSvnJjcEMjJs0S5nZWSAQBCfhyE5IzEvLzXH0MjYxJSBAQAAkiDe")
+    const [token, setToken]= useState("007eJxTYLj+vXp+xudy36nb3RaITZ7BuHRxi4PoT/f9ZhHcn3euvnVbgcHA0DLZyNLMItE4JdEkNS0xyTTV3MAy1dzCwizJwizZouPBpuSGQEaG7bOmMjMyQCCIz8OQnJGYl5eaY2hkbGLKwAAAE38kSw==")
     const [inCall, setInCall] = useState(false);
     const [channelName, setChannelName] = useState("channel12345");
     useEffect(()=> {
-        (async()=> {
-            try {
-                const res= await axios({
-                    url: SERVER_URL+ "/api/live/get_token",
-                    method: "get",
-                    headers: {
-                        "authorization": "Bearer "+ Cookies.get("accessToken")
-                    },
-                    params: {
-                        appId, channelName, appCertificate, userId: Cookies.get("uid")
-                    }
-                })
-                const result= await res.data
-                return setToken(result)
-            } catch (error) {
-                return console.log(error.message)
-            }
-            
-        })()
-    }, [channelName])
+      (async()=> {
+          try {
+              const res1= await axios({
+                url: SERVER_URL+ "/api/live/create/uid",
+                method: "get",
+                headers: {
+                  "authorization": "Bearer "+ Cookies.get("accessToken")
+
+                },
+                params: {
+                  appId, appCertificate, account: Cookies.get("uid")
+                }
+              })
+              const result1= await res1.data
+              setUid(result1.uid)
+              console.log(result1)
+              const res= await axios({
+                  url: SERVER_URL+ "/api/live/get_token",
+                  method: "get",
+                  headers: {
+                      "authorization": "Bearer "+ Cookies.get("accessToken")
+                  },
+                  params: {
+                    appId, channelName, appCertificate, uid: result1.uid
+                  }
+              })
+              const result= await res.data
+              return setToken(result)
+          } catch (error) {
+              return console.log(error.message)
+          }
+          
+      })()
+  }, [])
     return (
       <div className="video-call-component">
         {inCall ? (
-          <VideoCall setInCall={setInCall} channelName={channelName} appId={appId} token={token} />
+          <VideoCall setInCall={setInCall} channelName={channelName} appId={appId} token={token} uid={uid} />
         ) : (
           <ChannelForm setInCall={setInCall} setChannelName={setChannelName} />
         )}
@@ -54,7 +69,7 @@ const useClient = createClient(config);
 const useMicrophoneAndCameraTracks = createMicrophoneAndCameraTracks();
 
 const VideoCall = (props) => {
-  const { setInCall, channelName, appId, token } = props;
+  const { setInCall, channelName, appId, token, uid } = props;
   const [users, setUsers] = useState([]);
   const [start, setStart] = useState(false);
   // using the hook to get access to the client object
@@ -98,7 +113,7 @@ const VideoCall = (props) => {
         });
       });
 
-      await client.join(appId, name, token, 2131);
+      await client.join(appId, name, token, uid);
       if (tracks) await client.publish([tracks[0], tracks[1]]);
       setStart(true);
     };
@@ -107,7 +122,7 @@ const VideoCall = (props) => {
     //   console.log("init ready");
       init(channelName);
     }
-  }, [channelName, client, ready, tracks, appId, token]);
+  }, [channelName, client, ready, tracks, appId, token, uid]);
 
   return (
     <div className="App">
