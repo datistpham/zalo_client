@@ -10,6 +10,9 @@ import { useEffect } from 'react'
 import update_info_user from '../../api/update_info_user'
 import Cookies from 'js-cookie'
 import { Button } from 'react-bootstrap'
+import Toggle from 'react-toggle'
+import "react-toggle/style.css"
+import deaf_user from '../../api/user/deaf_user'
 
 const DetailProfile = (props) => {
     const {data, setData}= useContext(AppContext)
@@ -18,12 +21,17 @@ const DetailProfile = (props) => {
     const [newProfilePicture, setNewProfilePicture]= useState()
     const [newGender, setNewGender]= useState()
     const [updateData, setUpdateData]= useState()
+    const [newAddress, setNewAddress]= useState()
     const [changeAvatar, setChangeAvatar]= useState(false)
+    const [newDateOfBirth, setNewDateOfBirth]= useState("")
+
     useEffect(()=> {
         setNewGender(()=> data?.gender?.toString())
         setNewUsername(()=> data?.username)
         setNewProfilePicture(()=> data?.profilePicture)
-    }, [data?.gender, data?.username, data?.profilePicture])
+        setNewDateOfBirth(()=> data?.dateOfBirth)
+        setNewAddress(()=> data?.address)
+    }, [data?.gender, data?.username, data?.profilePicture, data?.dateOfBirth, data?.address])
     
   return (
     <div className={"dsjdkjfkdlfjdmskdgm"} style={{width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", left: 0, top: 0, background: "rgba(0, 0, 0, 0.3)", zIndex: 10}}>
@@ -42,7 +50,7 @@ const DetailProfile = (props) => {
                     <Avatar setChangeAvatar={setChangeAvatar} setOpen={()=> {}} avatar={newProfilePicture} />
                     <NameProfile username={data?.username} />
                     <ProfileInfo user={data} />
-                    <br />
+                    <AdvancedSettings user={data} />
                     <br />
                     <div className={"fjldjskdjkslajkalsas"} style={{width: '100%', display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
                         <Button variant={"primary"} onClick={()=> setUpdateInfo(()=> true)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#2e89ff", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px", width :'100%'}}>
@@ -68,7 +76,7 @@ const DetailProfile = (props) => {
                    {/*  */}
                     <ChangeUserName newUsername={newUsername} setNewUsername={setNewUsername} username={data?.username} />
                    {/*  */}
-                    <UpdateInfo newGender={newGender} setNewGender={setNewGender} />
+                    <UpdateInfo newGender={newGender} setNewGender={setNewGender} newAddress={newAddress} setNewAddress={setNewAddress} />
                     <br />
                     {
                         updateData?.msg &&
@@ -100,6 +108,29 @@ const DetailProfile = (props) => {
         </OutsideClickHandler>
     </div>
   )
+}
+
+const AdvancedSettings= (props)=> {
+    const [check, setCheck]= useState(false)
+    useEffect(()=> {
+        setCheck(props?.user?.isDeaf || false)
+    }, [props?.user?.isDeaf])
+    return (
+        <div style={{width: "100%", padding: 10}}>
+            <div style={{fontSize: 16, fontWeight: 600,marginBottom: 12 }}>Nâng cao</div>
+            <div style={{display: "flex", alignItems: 'center'}}>
+            <Toggle
+                id='cheese-status'
+                checked={check}
+                onChange={()=> {
+                    setCheck(prev=> !prev)
+                    deaf_user(!check)
+                }}     
+            />
+            <label style={{marginLeft: 8}} htmlFor='cheese-status'>Chế độ giành cho người câm</label>
+            </div>  
+        </div>
+    )
 }
 
 export const NameProfile= (props)=> {
@@ -154,6 +185,8 @@ const UpdateInfo= (props)=> {
                 Thông tin cá nhân 
             </div>
             <UpdateGender {...props} />
+            <br />
+            <UpdateAddress {...props} />
         </div>
     )
 }
@@ -172,6 +205,28 @@ const UpdateGender= (props)=> {
                     <input checked={props.newGender=== "false" ? true : false} onChange={(e)=> props.setNewGender(e.target.value)} type="radio" name={"gender"} value={false} style={{width: 20, height: 20}} />
                     <div className={"lkdasdkaSasad"}>Nữ</div>
                 </div>
+            </div>
+        </div>
+    )
+}
+
+const UpdateAddress= (props)=> {
+    return (
+        <div className={"msafkdmsalksjkldjs"} style={{}}>
+            <div className={"lksadjklasjklasjas"} style={{marginBottom: 8}}>Địa chỉ</div>
+            <div className={"fklsaskdsmlaksajksa"} style={{display: "flex", alignItems: 'center', gap: 20}}>
+                <input value={props?.newAddress} onChange={(e)=> props?.setNewAddress(e.target.value)} type="text" style={{width: "100%", height: 40, padding: 10, borderRadius: 5, outlineColor: "#2e89ff"}} />
+            </div>
+        </div>
+    )
+}
+
+const UpdateDateOfBirth= (props)=> {
+    return (
+        <div className={"msafkdmsalksjkldjs"} style={{}}>
+            <div className={"lksadjklasjklasjas"} style={{marginBottom: 8}}>Ngày sinh</div>
+            <div className={"fklsaskdsmlaksajksa"} style={{display: "flex", alignItems: 'center', gap: 20}}>
+                <input value={props?.newDateOfBirth} onChange={(e)=> props?.setNewDateOfBirth(e.target.value)} type="text" style={{width: "100%", height: 40, padding: 10, borderRadius: 5, outlineColor: "#2e89ff"}} />
             </div>
         </div>
     )

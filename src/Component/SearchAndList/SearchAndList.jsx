@@ -26,8 +26,8 @@ const SearchAndList = (props) => {
   const [data, setData]= useState()
   
   return (
-    <div className={"fkjlasdjsklsajaksas"} style={{width: 350, padding: '16px 0 0 0',height: "100vh", borderRight: "1px solid #e7e7e7"}}>
-        <SearchBar setChange={setChange} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setData={setData} />
+    <div className={"fkjlasdjsklsajaksas"} style={{width: props?.isCall=== true ? 0 : 350, padding: '16px 0 0 0',height: "100vh", borderRight: "1px solid #e7e7e7"}}>
+        <SearchBar isCall={props?.isCall} setChange={setChange} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setData={setData} />
         {
             props.is_friend_page=== true && <ListFriend />
         }
@@ -43,7 +43,7 @@ const SearchAndList = (props) => {
 const SearchBar= (props)=> {
     
     return (
-        <div className={"fmkldjskldjklfsass"} style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", position: "relative", marginBottom: 20, padding: "0 16px"}}>
+        <div className={"fmkldjskldjklfsass"} style={{width: "100%", display: props?.isCall=== false ? "flex" : "none", justifyContent: "center", alignItems: "center", position: "relative", marginBottom: 20, padding: "0 16px"}}>
             <MainSearch {...props} />
             <AddFriends />
             <CreateNewGroup setChange={props?.setChange} />

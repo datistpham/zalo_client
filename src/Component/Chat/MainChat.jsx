@@ -1,9 +1,5 @@
 import Cookies from "js-cookie";
-import React, { Fragment, useContext } from "react";
-import { memo } from "react";
-import { useMemo } from "react";
-import { useState } from "react";
-import { useEffect } from "react";
+import React, { useMemo, useState, useEffect, memo, Fragment, useContext } from "react";
 import { Button } from "react-bootstrap";
 import { GrClose } from "react-icons/gr";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -26,8 +22,13 @@ import SendButton from "./BottomSection/SendButton";
 import TypingText from "./BottomSection/TypingText";
 import ContentConversation from "./CenterSection/CenterSection";
 import { BsFillCameraVideoFill, BsThreeDots} from "react-icons/bs"
-import {MdCall} from "react-icons/md"
+import {MdCall, MdCallEnd} from "react-icons/md"
+import { v4 } from "uuid";
+import { HomeContext } from "../Home/Home";
+import { useRef } from "react";
+
 const MainChat = (props) => {
+  const refScroll= useRef()
   const query = useMemo(
     () => ({
       page: 1,
@@ -57,14 +58,20 @@ const MainChat = (props) => {
         style={{ width: "100%", height: "100%", maxHeight: "100vh" }}
       >
         <TitleMainChat
+          setCallId={props?.setCallId}
+          setIsCall={props?.setIsCall}
+          isCall={props?.isCall}
           setExtend={props?.setExtend}
           setChange={props?.setChange}
           {...props?.conversation}
           avtChat={props?.conversation?.imageGroup}
           name={props?.conversation?.label}
         />
-        <ContentConversation listMessage={listMessage} />
+        {/*  */}
+        <ContentConversation refScroll={refScroll} listMessage={listMessage} />
+        {/*  */}
         <TypeMainChat
+          refScroll={refScroll}
           contentText={contentText}
           setContentText={setContentText}
         />
@@ -73,8 +80,17 @@ const MainChat = (props) => {
   );
 };
 
-const TitleMainChat = memo((props) => {
+export const TitleMainChat = memo((props) => {
   const [open, setOpen] = useState(false);
+  const {socketState }= useContext(SocketContainerContext)
+  const {setInComingCall }= useContext(HomeContext)
+  const callId= useMemo(()=> v4().replaceAll("-", ""), [])
+  const {data }= useContext(AppContext)
+  useEffect(()=> {
+    socketState.on("end_call_from_sender", ()=> {
+      setInComingCall(()=> false)
+    })
+  }, [socketState, setInComingCall])
   return (
     <div
       className={"fdjdhsdjkvhsjkhaassa"}
@@ -137,12 +153,41 @@ const TitleMainChat = memo((props) => {
       </div>
       {/* call */}
       <div className={"fjskdjskdfjsksd"} style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 30}}>
-          <div title={"Bắt đầu một cuộc gọi audio call"} style={{display: "flex", justifyContent: "center", alignItems: "center", width: 40, height: 40, background: "#f2f0f5", borderRadius: "50%", cursor: "pointer"}}>
-            <MdCall style={{width: 24, height: 24}} />
-          </div>
-          <div title={"Bắt đầu một cuộc gọi video call"} style={{display: "flex", justifyContent: "center", alignItems: "center", width: 40, height: 40, background: "#f2f0f5", borderRadius: "50%", cursor: "pointer"}}>
-            <BsFillCameraVideoFill style={{width: 24, height: 24}} />
-          </div>
+          {/* end call */}
+          {
+            props?.isCall=== true && <>
+            <div onClick={()=> {
+              props?.setIsCall(()=> false)
+              socketState.emit("sender_end_call", {call_id: callId})
+              
+            }} title={"Kết thúc cuộc gọi"} style={{display: "flex", justifyContent: "center", alignItems: "center", width: 40, height: 40, background: "#f2f0f5", borderRadius: "50%", cursor: "pointer"}}>
+                <MdCallEnd style={{width: 24, height: 24}} />
+              </div>
+            </>
+          }
+          {/* call audio */}
+          
+          {/* call video */}
+          {
+            props?.isCall=== false && 
+            <>
+              <div title={"Bắt đầu một cuộc gọi audio"} style={{display: "flex", justifyContent: "center", alignItems: "center", width: 40, height: 40, background: "#f2f0f5", borderRadius: "50%", cursor: "pointer"}}>
+                <MdCall style={{width: 24, height: 24}} />
+              </div>
+              <div onClick={()=> {
+                socketState.emit("start_call", {call_id: callId, user_to_call: props?.member?.filter(
+                  (item) => item?._id !== Cookies.get("uid")
+                  )?.[0]?._id, senderInfo: {
+                    profilePicture: data?.profilePicture,
+                    username: data?.username
+                  }})
+                props?.setIsCall(()=> true)
+                props?.setCallId(()=> callId)
+              }} title={"Bắt đầu một cuộc gọi video"} style={{display: "flex", justifyContent: "center", alignItems: "center", width: 40, height: 40, background: "#f2f0f5", borderRadius: "50%", cursor: "pointer"}}>
+                <BsFillCameraVideoFill style={{width: 24, height: 24}} />
+              </div>
+            </>
+          }
           <div onClick={()=> props?.setExtend(prev=> !prev)} title={"Mở rộng"} style={{display: "flex", justifyContent: "center", alignItems: "center", width: 40, height: 40, background: "#f2f0f5", borderRadius: "50%", cursor: "pointer"}}>
             <BsThreeDots style={{width: 24, height: 24}} />
           </div>

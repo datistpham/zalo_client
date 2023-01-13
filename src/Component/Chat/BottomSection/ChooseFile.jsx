@@ -13,7 +13,7 @@ import update_last_conversation_id from '../../../api/coversation/update_last_co
 import {MdKeyboardVoice} from "react-icons/md"
 import { useAudioRecorder } from 'react-audio-voice-recorder'
 import SendVoice from './SendVoice'
-import { useState } from 'react'
+// import { useState } from 'react'
 
 const ChooseFile = (props) => {
   const recorderControls = useAudioRecorder();
@@ -37,6 +37,8 @@ const ChooseFile = (props) => {
   // send voice message
   const sendVoiceMessage= async(url)=>{
     socketState.emit("message_from_client", {message: url, roomId: idConversation, sender: data, type_message: "audio", key: v4(), createdAt: new Date()})
+    post_message(Cookies.get("uid"), idConversation, v4(), url, idConversation, "audio", "" )
+  
   }
   return (
     <div className={"jfdskajdfkdfjkdasa"} style={{display: "flex", justifyContent: "center", alignItems: 'center', gap: 10, paddingRight: 16}}>

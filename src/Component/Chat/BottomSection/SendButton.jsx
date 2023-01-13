@@ -15,6 +15,7 @@ const SendButton = (props) => {
   const {data }= useContext(AppContext)
   const {idConversation }= useParams()
   const sendMessage= ()=> {
+    
     socketState.emit("message_from_client", {message: props.contentText, roomId: idConversation, sender: data, type_message: "text", key: v4(), createdAt: new Date()})
     socketState.emit("typing_from_client_off", {roomId: idConversation, data, typing: false})
     post_message(Cookies.get("uid"), idConversation, v4(), props.contentText, idConversation, "text")

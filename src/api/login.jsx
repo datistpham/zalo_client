@@ -11,7 +11,7 @@ const login= async (phoneNumber, password, setData)=> {
         }
     })
     const result= await res.data
-    if(parseInt(res.status) === 200) {
+    if(parseInt(res.status) === 200 && result?.login === true) {
         Cookies.set("uid", result.user._id)
         Cookies.set("accessToken", result.accessToken)
         window.location.href= window.location.origin

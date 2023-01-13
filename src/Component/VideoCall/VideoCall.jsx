@@ -8,13 +8,19 @@ import Cookies from "js-cookie";
 import "./style.sass"
 import axios from "axios";
 import { SERVER_URL } from "../../config/config";
-const VideoCallComponent = () => {
+import {BsFillMicFill, BsFillMicMuteFill, BsCameraVideoFill, BsCameraVideoOffFill} from "react-icons/bs"
+import {MdCallEnd } from "react-icons/md"
+import { useContext } from "react";
+import { SocketContainerContext } from "../../SocketContainer/SocketContainer";
+import { useCallback } from "react";
+
+const VideoCallComponent = (props) => {
+    const {channelName }= props
     const appId = "019c2968a3da4efab5e709e7886b86c8"; //ENTER APP ID HERE
     const [uid, setUid]= useState("")
     const appCertificate = "cfc8747ffd6040ad89bf114dcded44b5"
-    const [token, setToken]= useState("007eJxTYLj+vXp+xudy36nb3RaITZ7BuHRxi4PoT/f9ZhHcn3euvnVbgcHA0DLZyNLMItE4JdEkNS0xyTTV3MAy1dzCwizJwizZouPBpuSGQEaG7bOmMjMyQCCIz8OQnJGYl5eaY2hkbGLKwAAAE38kSw==")
-    const [inCall, setInCall] = useState(false);
-    const [channelName, setChannelName] = useState("channel12345");
+    const [token, setToken]= useState("")
+    const [inCall, setInCall] = useState(true);
     useEffect(()=> {
       (async()=> {
           try {
@@ -31,7 +37,6 @@ const VideoCallComponent = () => {
               })
               const result1= await res1.data
               setUid(result1.uid)
-              console.log(result1)
               const res= await axios({
                   url: SERVER_URL+ "/api/live/get_token",
                   method: "get",
@@ -49,17 +54,19 @@ const VideoCallComponent = () => {
           }
           
       })()
-  }, [])
+  }, [channelName])
     return (
-      <div className="video-call-component">
-        {inCall ? (
-          <VideoCall setInCall={setInCall} channelName={channelName} appId={appId} token={token} uid={uid} />
-        ) : (
-          <ChannelForm setInCall={setInCall} setChannelName={setChannelName} />
-        )}
+      <div className="video-call-component" style={{width: "100%", maxWidth: 1000, borderRight: "1px solid #e7e7e7"}}>
+        { inCall && (
+            <VideoCall setInCall={setInCall} channelName={channelName} appId={appId} token={token} uid={uid} />
+          ) 
+        }
       </div>
     );
 }
+// {/* (
+//   <ChannelForm setInCall={setInCall} />
+// )} */}
 const config = {
     mode: "rtc",
     codec: "vp8"
@@ -80,7 +87,7 @@ const VideoCall = (props) => {
   
     useEffect(() => {
     // function to initialise the SDK
-    let init = async (name) => {
+    let init = async (channelName) => {
       client.on("user-published", async (user, mediaType) => {
         await client.subscribe(user, mediaType);
         // console.log("subscribe success");
@@ -113,7 +120,7 @@ const VideoCall = (props) => {
         });
       });
 
-      await client.join(appId, name, token, uid);
+      await client.join(appId, channelName, token, uid);
       if (tracks) await client.publish([tracks[0], tracks[1]]);
       setStart(true);
     };
@@ -125,11 +132,11 @@ const VideoCall = (props) => {
   }, [channelName, client, ready, tracks, appId, token, uid]);
 
   return (
-    <div className="App">
-      {ready && tracks && (
-        <Controls tracks={tracks} setStart={setStart} setInCall={setInCall} />
-      )}
+    <div className="wrap-video-conversation" style={{height: "100vh", position: "relative"}}>
       {start && tracks && <Videos users={users} tracks={tracks} />}
+      {ready && tracks && (
+        <Controls tracks={tracks} setStart={setStart} setInCall={setInCall} channelName={channelName} />
+      )}
     </div>
   );
 };
@@ -138,16 +145,22 @@ const Videos = (props) => {
   const { users, tracks } = props;
 
   return (
-    <div>
-      <div id="videos">
+    <div className={"wrap-video"} style={{width: "100%"}}>
+      <div id="videos" style={{width: "100%"}}>
         {/* AgoraVideoPlayer component takes in the video track to render the stream,
             you can pass in other props that get passed to the rendered div */}
-
-        <AgoraVideoPlayer
-          style={{ height: "95%", width: "95%" }}
-          className="vid"
-          videoTrack={tracks[1]}
-        />
+            
+        {/* me */}
+        <div className={"wrap-me c-flex-center"} style={{width: "25%", aspectRatio: 3 / 2, position: "absolute", bottom: -25, right: 0, flexDirection: "column", padding: 10, zIndex: 99}}>
+          {console.log(1234567)}
+          <AgoraVideoPlayer
+            style={{ height: "95%", width: "95%" }}
+            className="vid"
+            videoTrack={tracks[1]}
+          />
+          <div style={{textAlign: "center", marginTop: 8, fontWeight: 600}}>Bạn</div>
+        </div>
+        {/* another user media */}
         {users.length > 0 &&
           users.map((user) => {
             if (user.videoTrack) {
@@ -161,16 +174,36 @@ const Videos = (props) => {
               );
             } else return null;
           })}
+          {
+            users?.length <= 0 && 
+            <div style={{height: "95%", width: "95%", borderRadius: 10, border: "1px solid #e7e7e7", top: 0, left: 0}}>
+              
+            </div>
+          }
       </div>
     </div>
   );
 };
 
 export const Controls = (props) => {
+  const {socketState }= useContext(SocketContainerContext)
   const client = useClient();
-  const { tracks, setStart, setInCall } = props;
-  const [trackState, setTrackState] = useState({ video: true, audio: true });
-
+  const { tracks, setStart, setInCall, channelName } = props;
+  const [trackState, setTrackState] = useState({ video: true, audio: false   });
+  
+  useEffect(()=> {
+    return ()=> {
+     (async()=> {
+      await client.leave();
+      client.removeAllListeners();
+      // we close the tracks to perform cleanup
+      tracks[0].close();
+      tracks[1].close();
+      setStart(false);
+      setInCall(false);
+     })()
+    }
+  }, [client, setInCall, setStart, tracks])
   const mute = async (type) => {
     if (type === "audio") {
       await tracks[0].setEnabled(!trackState.audio);
@@ -185,7 +218,7 @@ export const Controls = (props) => {
     }
   };
 
-  const leaveChannel = async () => {
+  const leaveChannel = useCallback(async () => {
     await client.leave();
     client.removeAllListeners();
     // we close the tracks to perform cleanup
@@ -193,23 +226,33 @@ export const Controls = (props) => {
     tracks[1].close();
     setStart(false);
     setInCall(false);
-  };
-
+  }, [client, setInCall, setStart, tracks]);
+  useEffect(()=> {
+    window.onbeforeunload= function(e) {
+    leaveChannel()
+    socketState.emit("end_call", {call_id: channelName})
+    }
+  }, [channelName, socketState, leaveChannel])
   return (
     <div className="controls">
-      <p className={trackState.audio ? "on" : ""} onClick={() => mute("audio")}>
-        {trackState.audio ? "MuteAudio" : "UnmuteAudio"}
+      <p className={trackState.audio ? "on mic-on mic-ui" : "mic-off mic-ui"} onClick={() => mute("audio")}>
+        {trackState.audio ? <BsFillMicFill style={{marginBottom: 10}} /> : <BsFillMicMuteFill style={{marginBottom: 10}} />}
       </p>
-      <p className={trackState.video ? "on" : ""} onClick={() => mute("video")}>
-        {trackState.video ? "MuteVideo" : "UnmuteVideo"}
+      <p className={trackState.video ? "on camera-on camera-ui" : "camera-off camera-ui"} onClick={() => mute("video")}>
+        {trackState.video ? <BsCameraVideoFill style={{marginBottom: 10}} /> : <BsCameraVideoOffFill style={{marginBottom: 10}} />}
       </p>
-      {<p onClick={() => leaveChannel()}>Leave</p>}
+      {<p className={"end-call"} style={{borderRadius: 80}} onClick={() => {
+        leaveChannel()
+        socketState.emit("end_call", {call_id: channelName})
+      }}>
+        <MdCallEnd  />
+      </p>}
     </div>
   );
 };
 
-const ChannelForm = (props) => {
-  const { setInCall, setChannelName } = props;
+export const ChannelForm = (props) => {
+  const { setInCall } = props;
 
   return (
     <form className="join">
@@ -217,7 +260,6 @@ const ChannelForm = (props) => {
       <input
         type="text"
         placeholder="Enter Channel Name"
-        onChange={(e) => setChannelName(e.target.value)}
       />
       <button
         onClick={(e) => {

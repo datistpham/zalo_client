@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiTwotoneLock } from "react-icons/ai";
 import { BsPhoneFill } from "react-icons/bs";
-import { FaUserAlt } from "react-icons/fa";
+// import { FaUserAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import Background from "../Background/Background";
 import styles from "../Signup/Signup.module.sass";
@@ -87,6 +87,9 @@ const Login = (props) => {
                 Đăng nhập
               </button>
               <div onClick={()=> navigate("/forgot-password")} style={{ width: "100%", textAlign: "right", fontSize: 14, cursor: "pointer"}}>Quên mật khẩu</div>
+              {
+                <div style={{fontSize: 14, width: "100%", textAlign: "left", color: "#f00 "}}>{data?.msg}</div>
+              }
               <div className={styles.toLogin}>
                 <Link to="/signup">Đăng ký</Link>
               </div>

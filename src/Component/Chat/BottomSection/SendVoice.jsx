@@ -1,16 +1,20 @@
+import Cookies from "js-cookie";
 import React from "react";
 import { AudioRecorder } from "react-audio-voice-recorder";
-import { uploadVoiceClient } from "../../../firebase/config";
+import { useParams } from "react-router-dom";
+import send_voice from "../../../api/coversation/send_voice";
+// import { uploadVoiceClient } from "../../../firebase/config";
 import "./SendVoice.sass"
 
 const SendVoice = (props) => {
+
   const addAudioElement = async (blob) => {
-    const url = URL.createObjectURL(blob);
+    const formData= new FormData()
+    formData.append("voice", blob)
+    const {voice}= await send_voice(formData)
     const audio = document.createElement("audio");
-    audio.src = url;
-    const messageAudio= await uploadVoiceClient(url)
-    console.log(messageAudio)
-    props?.sendVoiceMessage(url)
+    audio.src = voice;
+    props?.sendVoiceMessage(voice)
   }
   return (
     <div style={{position: "relative"}}>

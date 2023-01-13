@@ -1,15 +1,14 @@
-import { memo, useState } from "react";
 import "./style.sass"
 import Cookies from "js-cookie";
 import _ from "lodash"
 import moment from "moment";
 import {MdDelete} from "react-icons/md"
 import {IoIosRemoveCircle} from "react-icons/io"
-import { useContext } from "react";
 import { SocketContainerContext } from "../../../SocketContainer/SocketContainer";
 import recall_message from "../../../api/message/recall_message";
 import remove_message from "../../../api/message/remove_message";
-import { useEffect } from "react";
+import { useEffect, useContext, memo, useState } from "react";
+import ScrollToBottom from "react-scroll-to-bottom";
 
 const ContentConversation = (props) => {
     const {socketState}= useContext(SocketContainerContext)
@@ -20,12 +19,16 @@ const ContentConversation = (props) => {
         style={{ width: "100%", height: "calc(100% - 60px - 68px" }}
       >
         <div
+          id="main-chat-scroll-to-bottom"
           className={"fjkdjsijaskldjakjdsk"}
           style={{ width: "100%", height: "100%", overflow: "auto", padding: 5}}
         >
-            {
-                _.orderBy(props?.listMessage, o=> moment(o.createdAt).valueOf(), 'asc')?.map((item)=> <ComponentMessage socketState={socketState} key={item?.key} {...item} keyId={item?.key} />)
-            }
+            <ScrollToBottom className={"fjkdjsijaskldjakjdsk"} mode="bottom">
+                {
+                    _.orderBy(props?.listMessage, o=> moment(o.createdAt).valueOf(), 'asc')?.map((item)=> <ComponentMessage socketState={socketState} key={item?.key} {...item} keyId={item?.key} />)
+                }
+                <div className="_3ybTi_as" name="main-chat" style={{position: "relative"}}></div>
+            </ScrollToBottom>
         </div>
       </div>
     );
