@@ -1,20 +1,47 @@
 import React, { Suspense } from 'react';
-import ReactDOM from 'react-dom/client';
 import './index.css';
-import reportWebVitals from './reportWebVitals';
 import "./a.sass"
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import  { AliveScope, KeepAlive } from 'react-activation';
+import Image from './Component/Media/Image';
+import { SnackbarProvider } from 'notistack';
+import { createRoot } from 'react-dom/client';
+
 const App= lazy(()=> import("./App"))
+const EntryApp= ()=> {
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <Suspense fallback={<div style={{width: "100%", height: "100%", position: 'fixed', top: 0, left: 0, display: 'flex', justifyContent: "center", alignItems: 'center'}}>Loading</div>}>
-    <App />
-  </Suspense>
-);
+  return (
+    <>
+      {/* <AliveScope> */}
+        <SnackbarProvider maxSnack={3} autoHideDuration={2000}>
+          <Router>
+            <Routes>
+              <Route path={"/*"} element={
+                // <KeepAlive id={"123456789"} when={()=> true}>
+                  <Suspense fallback={<div style={{width: "100%", height: "100%", position: 'fixed', top: 0, left: 0, display: 'flex', justifyContent: "center", alignItems: 'center'}}>Loading</div>}>
+                    <App />
+                  </Suspense>
+                // </KeepAlive>
+              
+              } />
+              <Route path={"/media/:image_id"} element={
+              // <KeepAlive when={true}>
+                <Image />
+              // </KeepAlive>
+              } />
+            </Routes>
+          </Router>
+        </SnackbarProvider>
+      {/* </AliveScope> */}
+    </>
+  )
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+createRoot(document.getElementById('root')).render(<EntryApp />);
+
+
+
+
+

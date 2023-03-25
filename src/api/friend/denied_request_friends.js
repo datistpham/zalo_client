@@ -4,7 +4,7 @@ import { SERVER_URL } from "../../config/config"
 
 const denied_request_friends = async (id, setData) => {
     const res =await axios({
-        url: SERVER_URL+ "/api/users/accept-add-friend/"+ id,
+        url: SERVER_URL+ "/api/users/denied-add-friend/"+ id,
         method: "post",
         data: {
             userId: Cookies.get("uid")

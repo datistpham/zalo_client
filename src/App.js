@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Login from "./Component/Login/Login";
 import Signup from "./Component/Signup/Signup";
 import { SERVER_URL } from "./config/config";
@@ -10,12 +10,19 @@ import { createContext } from "react";
 import Home from "./Component/Home/Home";
 import SocketContainer from "./SocketContainer/SocketContainer";
 import ForgotPassword from "./Component/ForgotPassword/ForgotPassword";
+// import KeepAlive from "react-activation";
 
+export function useIsMediaPath() {
+  const { pathname } = useLocation();
+
+  return pathname.startsWith("/media");
+}
 export const AppContext= createContext()
 const App = () => {
   const [data, setData] = useState();
   const [auth, setAuth] = useState();
   const [change, setChange]= useState(false)
+  
   useEffect(() => {
     (async () => {
       if(Cookies.get("uid")) {
@@ -43,29 +50,30 @@ const App = () => {
     })();
   }, [change]);
   return (
-    <SocketContainer>
-      <AppContext.Provider value={{data, auth,setData, setChange}}>
-        <BrowserRouter>
-          <Routes>
-            {
-              auth=== true && <>
-                <Route path={"/*"} element={<Home />} />
-                <Route path={"/signup"} element={<Navigate to={"/"} />} />
-                <Route path={"/login"} element={<Navigate to={"/"} />} />
-              </>
-            }
-            {
-              auth=== false && <>
-                <Route path={"/*"} element=<Navigate to={"/login"} /> />
-                <Route path={"/signup"} element={<Signup />} />
-                <Route path={"/login"} element={<Login />} />
-                <Route path={"/forgot-password"} element={<ForgotPassword />} />
-              </>
-            }
-          </Routes>
-        </BrowserRouter>
-      </AppContext.Provider>
-    </SocketContainer>
+      // <KeepAlive id="1234567888" when={()=> false}>
+        <SocketContainer>
+          <AppContext.Provider value={{data, auth,setData, setChange}}>
+            <Routes>
+              {
+                auth=== true && <>
+                  <Route path={"/*"} element={<Home />} />
+                  <Route path={"/signup"} element={<Navigate to={"/"} />} />
+                  <Route path={"/login"} element={<Navigate to={"/"} />} />
+                </>
+              }
+              {
+                auth=== false && <>
+                  <Route path={"/*"} element=<Navigate to={"/login"} /> />
+                  <Route path={"/signup"} element={<Signup />} />
+                  <Route path={"/login"} element={<Login />} />
+                  <Route path={"/forgot-password"} element={<ForgotPassword />} />
+                </>
+              }
+            </Routes>
+          </AppContext.Provider>
+        </SocketContainer>
+      // </KeepAlive>
+
   );
 };
 

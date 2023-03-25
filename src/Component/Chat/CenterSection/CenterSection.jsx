@@ -9,10 +9,12 @@ import recall_message from "../../../api/message/recall_message";
 import remove_message from "../../../api/message/remove_message";
 import { useEffect, useContext, memo, useState } from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
+import {AiFillLike } from "react-icons/ai"
+import { Link, useParams } from "react-router-dom";
 
 const ContentConversation = (props) => {
+    const {idConversation}= useParams()
     const {socketState}= useContext(SocketContainerContext)
-
     return (
       <div
         className={"fjkdjskjfksjdaswawsa"}
@@ -25,7 +27,7 @@ const ContentConversation = (props) => {
         >
             <ScrollToBottom className={"fjkdjsijaskldjakjdsk"} mode="bottom">
                 {
-                    _.orderBy(props?.listMessage, o=> moment(o.createdAt).valueOf(), 'asc')?.map((item)=> <ComponentMessage socketState={socketState} key={item?.key} {...item} keyId={item?.key} />)
+                    _.orderBy(props?.listMessage, o=> moment(o.createdAt).valueOf(), 'asc')?.filter(item=> item.roomId === idConversation)?.map((item)=> <ComponentMessage socketState={socketState} key={item?.key} {...item} keyId={item?.key} />)
                 }
                 <div className="_3ybTi_as" name="main-chat" style={{position: "relative"}}></div>
             </ScrollToBottom>
@@ -128,7 +130,9 @@ const Text= (props)=> {
                     props?.type_message=== "text" && <div className={"fjdkdjskjaskjasasas"} style={{maxWidth: "100%", wordBreak: "break-word"}}>{props?.message}</div>
                 }
                 {
-                    props?.type_message=== "image" && <img alt={""} src={props?.message} className={"fjdkdjskjaskjasasas"} style={{maxWidth: "100%", height: "auto", aspectRatio: 16 / 9, borderRadius: 5}} />
+                    props?.type_message=== "image" && <Link to={"/media/"+ props?.keyId}>
+                        <img alt={""} src={props?.message} className={"fjdkdjskjaskjasasas"} style={{maxWidth: "100%", height: "auto", aspectRatio: 16 / 9, borderRadius: 5}} />
+                    </Link>
                 }
                 {
                     props?.type_message=== "file" && <a style={{textDecoration: "none"}} rel="noreferrer"  target={"_blank"} href={props?.message}>
@@ -137,6 +141,9 @@ const Text= (props)=> {
                 }
                 {
                     props?.type_message=== "audio" && <audio src={props?.message} controls={true}></audio>
+                }
+                {
+                    props?.type_message=== "like" && <AiFillLike size={100} color={"#2e89ff"} />
                 }
             </>
             }

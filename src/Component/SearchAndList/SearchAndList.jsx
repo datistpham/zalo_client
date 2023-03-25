@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie'
 import React, { useEffect } from 'react'
 import { memo } from 'react'
 import { useContext } from 'react'
@@ -7,11 +8,13 @@ import {AiOutlineUserAdd, AiOutlineUsergroupAdd,AiOutlineSearch,AiFillCamera } f
 import { GrClose } from 'react-icons/gr'
 import OutsideClickHandler from 'react-outside-click-handler'
 import { useNavigate } from 'react-router-dom'
+import swal from 'sweetalert'
 import make_conversation from '../../api/coversation/make_conversation'
 import send_request_make_friend_by_me from '../../api/friend/send_request_make_friend_by_me'
 import search from '../../api/search'
 import search_user_by_phone from '../../api/search_user_by_phone'
 import { AppContext } from '../../App'
+import { IMAGE_GROUP_DEFAULT } from '../../config/config'
 import { uploadImageClient } from '../../firebase/config'
 import Avatar from '../Home/Avatar'
 import CoverPhoto from '../Home/CoverPhoto'
@@ -102,12 +105,18 @@ export const PopupAddFriends= (props)=> {
                                 <Avatar avatar={data?.profilePicture} />
                                 <NameProfile username={data?.username} />
                                 <div style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 16}}>
-                                    <Button onClick={()=> {}} variant="secondary">Nhắn tin</Button>
+                                    {
+                                        data?._id !== Cookies.get("uid") && 
+                                        <Button onClick={()=> {}} variant="secondary">Nhắn tin</Button>
+                                    }
                                 </div>
                                 <ProfileInfo user={data} />
                                 <br />
                                 <div style={{width: "100%", display: "flex", flexDirection: "row-reverse", alignItems: "center", gap: 16}}>
-                                    <Button onClick={()=> send_request_make_friend_by_me(data?._id, setDataSendRequest)} variant="primary">Kết bạn</Button>
+                                    {
+                                        data?._id !== Cookies.get("uid") && 
+                                        <Button onClick={()=> send_request_make_friend_by_me(data?._id, setDataSendRequest)} variant="primary">Kết bạn</Button>
+                                    }
                                     
                                     <Button onClick={()=> props.setOpen(()=> false)} variant="secondary">Đóng</Button>
                                 </div>
@@ -135,7 +144,12 @@ export const PopupAddFriends= (props)=> {
                                 </div>
                                 <br />
                                 <div style={{width: "100%", display: "flex", flexDirection: "row-reverse", alignItems: "center", gap: 16}}>
-                                    <Button onClick={()=> search_user_by_phone(phoneNumber, setData)} variant="primary">Xác nhận</Button>
+                                    <Button onClick={()=> {
+                                        if(phoneNumber?.trim()?.length <= 0 || !phoneNumber) {
+                                            return swal("Thông báo", "Không được để trống số điện thoại", "error")
+                                        }
+                                        search_user_by_phone(phoneNumber?.trim(), setData)
+                                    }} variant="primary">Xác nhận</Button>
                                     <Button onClick={()=> props.setOpen(()=> false)} variant="secondary">Hủy</Button>
                                 </div>
                             </>
@@ -165,10 +179,26 @@ const PopupMakeConversation= (props)=> {
         setImage({img: e.target.files[0], preview: URL.createObjectURL(e.target.files[0]), key: e.target.files[0].lastModified})
     }
     const exec= async ()=> {
-        const urlImage= await uploadImageClient(img.img)
-        await make_conversation(label, arrayMember, data?._id, urlImage, setResult, navigate)
-        props.setOpen(()=> false)
-        props?.setChange(()=> prev=> !prev)
+        if(arrayMember.length <= 1) {
+            return swal("Thông báo", "Số lượng thành viên nhóm phải nhiều hơn một người", "error")
+        }
+        if(label.length <= 0) {
+            return swal("Thông báo", "Không được để thiếu tên nhóm", "error")
+
+        }
+        if(img?.img) {
+            const urlImage= await uploadImageClient(img.img)
+            await make_conversation(label, arrayMember, data?._id, urlImage, setResult, navigate)
+            .then(()=> swal("Thông báo", "Tạo nhóm thành công", "success"))
+            props.setOpen(()=> false)
+            props?.setChange(()=> prev=> !prev)
+        }
+        else {
+            await make_conversation(label, arrayMember, data?._id, IMAGE_GROUP_DEFAULT, setResult, navigate)
+            .then(()=> swal("Thông báo", "Tạo nhóm thành công", "success"))
+            props.setOpen(()=> false)
+            props?.setChange(()=> prev=> !prev)
+        }
     }
     return (
         <div className={"fkjldsklkdsslaskdsaa"} style={{width: "100%", height: "100%", position: "fixed", top: 0, left: 0, background: "rgba(0 ,0 ,0,0.3)", zIndex: 12, display: "flex", justifyContent: "center", alignItems: "center"}}>

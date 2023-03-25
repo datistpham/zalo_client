@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import OutsideClickHandler from 'react-outside-click-handler'
 import {GrClose } from "react-icons/gr"
 import CoverPhoto from './CoverPhoto'
@@ -13,8 +13,10 @@ import { Button } from 'react-bootstrap'
 import Toggle from 'react-toggle'
 import "react-toggle/style.css"
 import deaf_user from '../../api/user/deaf_user'
+import { useSnackbar } from 'notistack'
 
 const DetailProfile = (props) => {
+    const { enqueueSnackbar }= useSnackbar()
     const {data, setData}= useContext(AppContext)
     const [updateInfo, setUpdateInfo]= useState(false)
     const [newUsername, setNewUsername]= useState()
@@ -23,7 +25,10 @@ const DetailProfile = (props) => {
     const [updateData, setUpdateData]= useState()
     const [newAddress, setNewAddress]= useState()
     const [changeAvatar, setChangeAvatar]= useState(false)
+    const [changeCoverPhoto, setChangeCoverPhoto]= useState(false)
+    // eslint-disable-next-line
     const [newDateOfBirth, setNewDateOfBirth]= useState("")
+    const [newCoverPhoto, setNewCoverPhoto]= useState()
 
     useEffect(()=> {
         setNewGender(()=> data?.gender?.toString())
@@ -31,8 +36,20 @@ const DetailProfile = (props) => {
         setNewProfilePicture(()=> data?.profilePicture)
         setNewDateOfBirth(()=> data?.dateOfBirth)
         setNewAddress(()=> data?.address)
-    }, [data?.gender, data?.username, data?.profilePicture, data?.dateOfBirth, data?.address])
-    
+        setNewCoverPhoto(()=> data?.coverPhoto)
+    }, [data?.gender, data?.username, data?.profilePicture, data?.dateOfBirth, data?.address, data?.coverPhoto])
+    useEffect(()=> {
+        if(parseInt(updateData?.status)=== 200) {
+            enqueueSnackbar(updateData?.msg, {
+                variant: "success"
+            })
+        }
+        else if(parseInt(updateData?.status)=== 500) {
+            enqueueSnackbar(updateData?.msg, {
+                variant: "error"
+            })
+        }
+    }, [updateData, enqueueSnackbar])
   return (
     <div className={"dsjdkjfkdlfjdmskdgm"} style={{width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", left: 0, top: 0, background: "rgba(0, 0, 0, 0.3)", zIndex: 10}}>
         <OutsideClickHandler onOutsideClick={()=> props.setOpen(()=> false)}>
@@ -70,7 +87,7 @@ const DetailProfile = (props) => {
                             <GrClose />
                         </div>
                     </div>
-                    <CoverPhoto coverPhoto={data?.coverPicture} />
+                    <CoverPhoto setChangeCoverPhoto={setChangeCoverPhoto} newCoverPhoto={newCoverPhoto} setNewCoverPhoto={setNewCoverPhoto} is_edit={true} coverPhoto={data?.coverPicture} />
                     {/*  */}
                     <Avatar setOpen={()=> {}} avatar={newProfilePicture} newProfilePicture={newProfilePicture} setNewProfilePicture={setNewProfilePicture} is_edit={true} />
                    {/*  */}
@@ -78,12 +95,6 @@ const DetailProfile = (props) => {
                    {/*  */}
                     <UpdateInfo newGender={newGender} setNewGender={setNewGender} newAddress={newAddress} setNewAddress={setNewAddress} />
                     <br />
-                    {
-                        updateData?.msg &&
-                        <div style={{marginBottom: 10}}>
-                            {updateData?.msg}
-                        </div>
-                    }
                     <div className={"fjldjskdjkslajkalsas"} style={{width: '100%', display: "flex", justifyContent: "center", alignItems: "center", gap :20}}>
                         {
                             updateData?.msg ? <>
@@ -97,7 +108,7 @@ const DetailProfile = (props) => {
                                 <button onClick={()=> props.setOpen(()=> false)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#5555", cursor: "pointer", color: "#000", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px"}}>
                                     Hủy
                                 </button>
-                                <button onClick={()=> update_info_user(Cookies.get("uid"), newUsername, newProfilePicture, newGender, setUpdateData, setData, changeAvatar)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#2e89ff", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px"}}>
+                                <button onClick={()=> update_info_user(Cookies.get("uid"), newUsername, newProfilePicture, newGender, setUpdateData, setData, changeAvatar, newCoverPhoto, changeCoverPhoto)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#2e89ff", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px"}}>
                                     Cập nhật
                                 </button>
                             </>
@@ -232,4 +243,4 @@ const UpdateDateOfBirth= (props)=> {
     )
 }
 
-export default DetailProfile
+export default memo(DetailProfile)

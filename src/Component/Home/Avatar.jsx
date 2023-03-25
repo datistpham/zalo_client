@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { useState } from 'react'
 import {AiFillCamera } from "react-icons/ai"
 
@@ -32,4 +32,4 @@ const Avatar = (props) => {
   )
 }
 
-export default Avatar
+export default memo(Avatar)

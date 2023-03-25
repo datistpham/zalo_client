@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   AgoraVideoPlayer,
   createClient,
@@ -13,9 +13,10 @@ import {MdCallEnd } from "react-icons/md"
 import { useContext } from "react";
 import { SocketContainerContext } from "../../SocketContainer/SocketContainer";
 import { useCallback } from "react";
+import Draggable from 'react-draggable';
 
 const VideoCallComponent = (props) => {
-    const {channelName }= props
+    const {channelName, audio, video }= props
     const appId = "019c2968a3da4efab5e709e7886b86c8"; //ENTER APP ID HERE
     const [uid, setUid]= useState("")
     const appCertificate = "cfc8747ffd6040ad89bf114dcded44b5"
@@ -58,7 +59,7 @@ const VideoCallComponent = (props) => {
     return (
       <div className="video-call-component" style={{width: "100%", maxWidth: 1000, borderRight: "1px solid #e7e7e7"}}>
         { inCall && (
-            <VideoCall setInCall={setInCall} channelName={channelName} appId={appId} token={token} uid={uid} />
+            <VideoCall setInCall={setInCall} channelName={channelName} appId={appId} token={token} uid={uid} video={video} audio={audio} />
           ) 
         }
       </div>
@@ -76,14 +77,13 @@ const useClient = createClient(config);
 const useMicrophoneAndCameraTracks = createMicrophoneAndCameraTracks();
 
 const VideoCall = (props) => {
-  const { setInCall, channelName, appId, token, uid } = props;
+  const { setInCall, channelName, appId, token, uid, video, audio } = props;
   const [users, setUsers] = useState([]);
   const [start, setStart] = useState(false);
   // using the hook to get access to the client object
   const client = useClient();
   // ready is a state variable, which returns true when the local tracks are initialized, untill then tracks variable is null
   const { ready, tracks } = useMicrophoneAndCameraTracks();
-  
   
     useEffect(() => {
     // function to initialise the SDK
@@ -135,24 +135,23 @@ const VideoCall = (props) => {
     <div className="wrap-video-conversation" style={{height: "100vh", position: "relative"}}>
       {start && tracks && <Videos users={users} tracks={tracks} />}
       {ready && tracks && (
-        <Controls tracks={tracks} setStart={setStart} setInCall={setInCall} channelName={channelName} />
+        <Controls tracks={tracks} setStart={setStart} setInCall={setInCall} channelName={channelName} video={video} audio={audio} />
       )}
     </div>
   );
 };
 
-const Videos = (props) => {
+const Videos = memo((props) => {
   const { users, tracks } = props;
 
   return (
     <div className={"wrap-video"} style={{width: "100%"}}>
       <div id="videos" style={{width: "100%"}}>
-        {/* AgoraVideoPlayer component takes in the video track to render the stream,
-            you can pass in other props that get passed to the rendered div */}
             
         {/* me */}
+        <Draggable>
         <div className={"wrap-me c-flex-center"} style={{width: "25%", aspectRatio: 3 / 2, position: "absolute", bottom: -25, right: 0, flexDirection: "column", padding: 10, zIndex: 99}}>
-          {console.log(1234567)}
+
           <AgoraVideoPlayer
             style={{ height: "95%", width: "95%" }}
             className="vid"
@@ -160,6 +159,8 @@ const Videos = (props) => {
           />
           <div style={{textAlign: "center", marginTop: 8, fontWeight: 600}}>Bạn</div>
         </div>
+        </Draggable>
+
         {/* another user media */}
         {users.length > 0 &&
           users.map((user) => {
@@ -183,14 +184,15 @@ const Videos = (props) => {
       </div>
     </div>
   );
-};
+});
 
 export const Controls = (props) => {
+
   const {socketState }= useContext(SocketContainerContext)
   const client = useClient();
-  const { tracks, setStart, setInCall, channelName } = props;
-  const [trackState, setTrackState] = useState({ video: true, audio: false   });
-  
+  const { tracks, setStart, setInCall, channelName, video, audio } = props;
+  const [trackState, setTrackState] = useState({ video: video, audio: audio   });
+
   useEffect(()=> {
     return ()=> {
      (async()=> {
@@ -204,6 +206,7 @@ export const Controls = (props) => {
      })()
     }
   }, [client, setInCall, setStart, tracks])
+ 
   const mute = async (type) => {
     if (type === "audio") {
       await tracks[0].setEnabled(!trackState.audio);
@@ -248,28 +251,6 @@ export const Controls = (props) => {
         <MdCallEnd  />
       </p>}
     </div>
-  );
-};
-
-export const ChannelForm = (props) => {
-  const { setInCall } = props;
-
-  return (
-    <form className="join">
-      
-      <input
-        type="text"
-        placeholder="Enter Channel Name"
-      />
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          setInCall(true);
-        }}
-      >
-        Join
-      </button>
-    </form>
   );
 };
 

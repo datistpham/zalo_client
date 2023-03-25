@@ -9,6 +9,7 @@ import Background from "../Background/Background";
 import styles from "../Signup/Signup.module.sass";
 import * as yup from "yup";
 import login from "../../api/login";
+import { useSnackbar } from "notistack";
 
 const Login = (props) => {
   const navigate = useNavigate();
@@ -21,7 +22,6 @@ const Login = (props) => {
         "Số điện thoại hoặc email không hợp lệ"
       )
       .required(),
-    // password: yup.string().min(8, 'Mật khẩu phải trên 8 kí tự').required(),
   });
   const {
     handleSubmit,
@@ -31,19 +31,10 @@ const Login = (props) => {
 
   const [phoneNumber, setPhoneNumber] = useState(() => "");
   const [password, setPassword] = useState(() => "");
-  const [data, setData] = useState();
+  // const [data, setData] = useState();
+  const {enqueueSnackbar }= useSnackbar()
 
   const onSubmit = async (data) => {
-    // if (pass === repeatPass) {
-    // await dispatch(registerUserRequest(data, () => {
-    //   history.push('/login')
-    // }));
-    // } else {
-    //   setErrorMessage('Mật khẩu không khớp')
-    //   setTimeout(() => {
-    //     setErrorMessage('')
-    //   }, 2000)
-    // }
   };
 
   return (
@@ -81,15 +72,22 @@ const Login = (props) => {
                 </span>
               </div>
               <button
-                onClick={() => login(phoneNumber, password, setData)}
+                onClick={async () => {
+                  const result= await login(phoneNumber, password)
+                  if(parseInt(result?.status) === 400 || parseInt(result?.status)=== 500) {
+                    enqueueSnackbar (result?.msg, {
+                      variant: "error"
+                    })
+                  }
+                }}
                 className={styles.btn}
               >
                 Đăng nhập
               </button>
               <div onClick={()=> navigate("/forgot-password")} style={{ width: "100%", textAlign: "right", fontSize: 14, cursor: "pointer"}}>Quên mật khẩu</div>
-              {
+              {/* {
                 <div style={{fontSize: 14, width: "100%", textAlign: "left", color: "#f00 "}}>{data?.msg}</div>
-              }
+              } */}
               <div className={styles.toLogin}>
                 <Link to="/signup">Đăng ký</Link>
               </div>

@@ -16,10 +16,17 @@ const TypingText = (props) => {
     else if(e.target.value?.length <= 0) {
       socketState.emit("typing_from_client_off", {roomId: idConversation, data, typing: false})
     }
+    
   }
   return (
     <div className={"fjdkfjkdjdkjskds"} style={{flex: "1 1 0", display: "flex", justifyContent:" center", alignItems: "center"}}>
-      <input onChange={f} value={props.contentText} type="text" style={{width: "100%", height: 40, outlineColor: "#2e89ff", border: "1px solid #e7e7e7", borderRadius: 80, padding: 10}} placeholder={"Nhập tin nhắn..."} />
+      <input onKeyUp={(e)=> {
+        if(e.key=== "Enter") {
+          if(e.target.value.trim().length > 0) {
+            props?.sendMessage()
+          }
+        }
+      }} onChange={f} value={props.contentText} type="text" style={{width: "100%", height: 40, outlineColor: "#2e89ff", border: "1px solid #e7e7e7", borderRadius: 80, padding: 10}} placeholder={"Nhập tin nhắn..."} />
     </div>
   )
 }

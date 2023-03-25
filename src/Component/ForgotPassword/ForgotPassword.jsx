@@ -12,6 +12,7 @@ import "./style.sass";
 import confirm_code from "../../api/confirm_code";
 import { AiTwotoneLock } from "react-icons/ai";
 import reset_password from "../../api/reset_password";
+import swal from "sweetalert";
 
 const ForgotPassword = (props) => {
   // eslint-disable-next-line
@@ -141,8 +142,13 @@ const ForgotPassword = (props) => {
                       </div>
                       <div className={"fjkadjksjksjdasaa"}>
                         <Button
-                          onClick={() =>
-                            reset_password(phoneNumber, password, navigate)
+                          onClick={async () =>
+                            {
+                              await reset_password(phoneNumber, password, navigate)
+                              swal("Thông báo", "Bạn đã cập nhật mật khẩu thành công", "success")
+                              .then(()=> navigate("/login"))
+                            }
+
                           }
                           className={"fjkadjksjksjdasaa"}
                           color={"primary"}

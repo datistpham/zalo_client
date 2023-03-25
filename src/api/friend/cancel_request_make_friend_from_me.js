@@ -4,7 +4,7 @@ import { SERVER_URL } from "../../config/config"
 
 const cancel_request_make_friend_from_me = async (id, setChange) => {
     const res= await axios({
-        url: `${SERVER_URL}/api/users//cancel-add-friend/${id}`,
+        url: `${SERVER_URL}/api/users/cancel-add-friend/${id}`,
         method: "post",
         headers: {
             "authorization": "Bearer "+ Cookies.get("accessToken")

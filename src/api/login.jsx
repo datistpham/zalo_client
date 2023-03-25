@@ -2,7 +2,7 @@ import axios from "axios"
 import Cookies from "js-cookie"
 import {SERVER_URL } from "../config/config"
 
-const login= async (phoneNumber, password, setData)=> {
+const login= async (phoneNumber, password)=> {
     const res= await axios({
         url: `${SERVER_URL}/user/login`,
         method: "post",
@@ -16,7 +16,7 @@ const login= async (phoneNumber, password, setData)=> {
         Cookies.set("accessToken", result.accessToken)
         window.location.href= window.location.origin
     }
-    return setData(result)
+    return result
 }
 
 export default login

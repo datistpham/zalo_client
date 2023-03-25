@@ -19,7 +19,7 @@ import { useEffect } from "react";
 
 const Signup = () => {
   // eslint-disable-next-line
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const schema = yup.object().shape({
     phone: yup
       .string()
@@ -47,16 +47,6 @@ const Signup = () => {
   const [data, setData] = useState();
 
   const onSubmit = async (data) => {
-    // if (pass === repeatPass) {
-    // await dispatch(registerUserRequest(data, () => {
-    //   history.push('/login')
-    // }));
-    // } else {
-    //   setErrorMessage('Mật khẩu không khớp')
-    //   setTimeout(() => {
-    //     setErrorMessage('')
-    //   }, 2000)
-    // }
   };
 
   const [message, setMessage]= useState()

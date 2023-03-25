@@ -9,6 +9,7 @@ import update_last_conversation_id from '../../../api/coversation/update_last_co
 import post_message from '../../../api/message/post_message'
 import { AppContext } from '../../../App'
 import { SocketContainerContext } from '../../../SocketContainer/SocketContainer'
+import TypingText from './TypingText'
 
 const SendButton = (props) => {
   const {socketState}= useContext(SocketContainerContext)
@@ -21,11 +22,19 @@ const SendButton = (props) => {
     post_message(Cookies.get("uid"), idConversation, v4(), props.contentText, idConversation, "text")
     update_last_conversation_id(idConversation)
     props.setContentText(()=> "")
+    props?.sendNewMessage()
   }
   return (
-    <div className={"dfjdkdjskjkdjkgfljdadsas"}  style={{display: "flex", justifyContent: "center", alignItems: 'center', gap: 10, paddingLeft: 16}}>
-      <Button onClick={sendMessage} disabled={props?.contentText?.length > 0 ? false : true } variant={"primary"}>Gửi</Button>
-    </div>
+    <>
+      <TypingText {...props} sendMessage={sendMessage} />
+      <div className={"dfjdkdjskjkdjkgfljdadsas"}  style={{display: "flex", justifyContent: "center", alignItems: 'center', gap: 10, paddingLeft: 16}}>
+        <Button onClick={()=> {
+          sendMessage()
+          props?.newestMessage()
+        }} disabled={props?.contentText?.length > 0 ? false : true } variant={"primary"}>Gửi</Button>
+      </div>
+
+    </>
   )
 }
 

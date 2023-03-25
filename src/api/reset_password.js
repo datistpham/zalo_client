@@ -10,8 +10,7 @@ const reset_password= async (email, password, navigate)=> {
         }
     })
     const result= await res.data
-    console.log(result)
-    return navigate("/login")
+    return result
 }
 
 export default reset_password

@@ -1,12 +1,14 @@
+import Cookies from 'js-cookie'
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import accpet_add_friends from '../../api/friend/accpet_add_friends'
 import cancel_request_make_friend_from_me from '../../api/friend/cancel_request_make_friend_from_me'
 import denied_request_friends from '../../api/friend/denied_request_friends'
 import get_list_user_send_request_add_friend_of_me from '../../api/friend/get-list-user-send-request-add-friend-of-me'
 import get_list_user_request_make_friend_to_me from '../../api/friend/get_list_user_request_make_friend_to_me'
+import update_seen_request from '../../api/update_seen_request'
 import SearchAndList from '../SearchAndList/SearchAndList'
 
 const FriendPage = (props) => {
@@ -15,6 +17,7 @@ const FriendPage = (props) => {
       <SearchAndList is_friend_page={true} />
       <div style={{flex: " 1 1 0"}} className={"fnjkdhjsjhdslkjsas"}>
         <Routes>
+          <Route path={"/"} element={<Navigate replace={true} to={"/friends/request/to/me"} />} />
           <Route path={"/request/by/me"} element={<ComponentRequestByMe />} />
           <Route path={"/request/to/me"} element={<ComponentRequestToMe />} />
         </Routes>
@@ -47,6 +50,9 @@ const ComponentRequestByMe= (props)=> {
 const ComponentRequestToMe= (props)=> {
   const [data, setData]= useState(()=> [])
   const [change, setChange]= useState(()=> false)
+  useEffect(()=> {
+    update_seen_request(Cookies.get("uid"), 0)
+  }, [])
   useEffect(()=> {
     get_list_user_request_make_friend_to_me(setData)
   }, [change])
