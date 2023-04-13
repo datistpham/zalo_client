@@ -81,8 +81,11 @@ const MainChat = (props) => {
           setAudio={props?.setAudio}
         />
         {/*  */}
+        
         <ContentConversation refScroll={refScroll} listMessage={listMessage} />
+
         {/*  */}
+
         <BottomSection
           refScroll={refScroll}
           contentText={contentText}
@@ -346,6 +349,9 @@ export const PopupAddFriends = (props) => {
   const [friendStatus, setFriendStatus] = useState();
   const [toggleMakeFriend, setToggleMakeFriend] = useState(false);
   const [messageRequest, setMessageRequest]= useState("Xin chào, tôi là "+ data?.username)
+  // eslint-disable-next-line
+  const [profileUser, setProfileUser]= useState(props?.member?.filter((item) => item?._id !== Cookies.get("uid"))?.[0])
+
   useEffect(() => {
     (async () => {
       const result = await get_friend_status(
@@ -372,7 +378,7 @@ export const PopupAddFriends = (props) => {
       }}
     >
       <OutsideClickHandler onOutsideClick={() => props.setOpen(() => false)}>
-        <div
+        <div style={{overflow: "hidden", borderRadius: 10}}><div
           className={"fjlkdsjdkljsdklaskd"}
           style={{
             padding: 16,
@@ -380,6 +386,8 @@ export const PopupAddFriends = (props) => {
             borderRadius: 5,
             width: "100vw",
             maxWidth: 450,
+            maxHeight: "90vh",
+            overflow: "auto"
           }}
           onClick={(e) => {
             e.stopPropagation();
@@ -442,6 +450,14 @@ export const PopupAddFriends = (props) => {
                     )?.[0]?.username
               }
             />
+            {
+              props?.member?.length <= 2 && <>
+                {
+                  toggleMakeFriend=== false && 
+                  <ProfileInfo user={{gender: profileUser?.gender, phoneNumber: profileUser?.phoneNumber, address: profileUser?.address}} />
+                }
+              </>
+            }
             <div
               style={{
                 width: "100%",
@@ -520,10 +536,11 @@ export const PopupAddFriends = (props) => {
                       </>
                     )}
                     {friendStatus?.request === true &&
-                      friendStatus?.duplicate === true && (
+                      friendStatus?.duplicate === true  && (
                         <Button
                           disabled={data2?.duplicate === true ? true : false}
                           onClick={() => {
+                            setToggleMakeFriend(()=> false)
                             setFriendStatus({
                               request: false,
                               duplicate: false,
@@ -607,6 +624,7 @@ export const PopupAddFriends = (props) => {
                   </>
                 )}
             </div>
+
             {/* host class */}
             {props?.label && (
               <>
@@ -789,7 +807,7 @@ export const PopupAddFriends = (props) => {
               </>
             )}
           </div>
-        </div>
+        </div></div>
       </OutsideClickHandler>
     </div>
   );

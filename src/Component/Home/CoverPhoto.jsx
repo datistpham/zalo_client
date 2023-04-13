@@ -8,7 +8,9 @@ const CoverPhoto = (props) => {
   const imgPreviewFunction= (e)=> {
     setImagePreview({img: e.target.files[0], preview: URL.createObjectURL(e.target.files[0]), key: e.target.files[0].lastModified})
     props?.setNewCoverPhoto(e.target.files[0])
-    props?.setChangeCoverPhoto(true)
+    if(props?.setChangeCoverPhoto) {
+      props?.setChangeCoverPhoto(true)
+    }
     // if(props?.setNewCoverPhoto) {
     //   // props?.setChangeAvatar(()=> true)
     // }

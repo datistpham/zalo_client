@@ -1,52 +1,34 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { AiTwotoneLock } from "react-icons/ai";
 import { BsPhoneFill } from "react-icons/bs";
+import { BiShowAlt, BiHide } from "react-icons/bi"
 // import { FaUserAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import Background from "../Background/Background";
 import styles from "../Signup/Signup.module.sass";
-import * as yup from "yup";
 import login from "../../api/login";
 import { useSnackbar } from "notistack";
 
 const Login = (props) => {
   const navigate = useNavigate();
-  const schema = yup.object().shape({
-    phone: yup
-      .string()
-      .trim()
-      .matches(
-        /^(?:\d{10}|(84|0[3|5|7|8|9])+([0-9]{8})\b|\w+@\w+\.\w{2,3})$/,
-        "Số điện thoại hoặc email không hợp lệ"
-      )
-      .required(),
-  });
-  const {
-    handleSubmit,
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
-
+  
+ 
+  const [showPassword, setShowPassword]= useState(false)
   const [phoneNumber, setPhoneNumber] = useState(() => "");
   const [password, setPassword] = useState(() => "");
   // const [data, setData] = useState();
   const {enqueueSnackbar }= useSnackbar()
-
-  const onSubmit = async (data) => {
-  };
 
   return (
     <div className={styles.container}>
       <div className={styles.register}>
         {
           <>
-            <div className={styles.register_title} style={{ marginBottom: 20 }}>
-              Đăng nhập tài khoản Zalo <br></br>để kết nối với ứng dụng Zalo
+            <div className={styles.register_title} style={{ marginBottom: 20, fontSize: 18 }}>
+              Đăng nhập tài khoản tin nhắn nhanh <br></br>để kết nối với ứng dụng tin nhắn nhanh
               Chat
             </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form action="#">
               <div className={styles.register_form_input}>
                 <input
                   type="text"
@@ -58,9 +40,9 @@ const Login = (props) => {
                   <BsPhoneFill />
                 </span>
               </div>
-              <div className={styles.register_form_input}>
+              <div style={{position: "relative"}} className={styles.register_form_input}>
                 <input
-                  type="password"
+                  type={showPassword=== true ? "text" : "password"}
                   placeholder="Mật khẩu"
                   required
                   onChange={(e) => setPassword(e.target.value)}
@@ -69,6 +51,16 @@ const Login = (props) => {
                 <span>
                   {" "}
                   <AiTwotoneLock />
+                </span>
+                <span style={{position: "absolute", left: "100%", top: "50%", transform: "translate(-100%, -50%)"}}>
+                  {
+                    showPassword=== false && <BiHide onClick={()=> setShowPassword(true)} />
+                  }
+                  {
+                    showPassword=== true && 
+                    <BiShowAlt onClick={()=> setShowPassword(false)} />
+                  }
+
                 </span>
               </div>
               <button
@@ -80,7 +72,7 @@ const Login = (props) => {
                     })
                   }
                 }}
-                className={styles.btn}
+                className={styles.btn} style={{fontSize: 16}}
               >
                 Đăng nhập
               </button>
@@ -89,7 +81,7 @@ const Login = (props) => {
                 <div style={{fontSize: 14, width: "100%", textAlign: "left", color: "#f00 "}}>{data?.msg}</div>
               } */}
               <div className={styles.toLogin}>
-                <Link to="/signup">Đăng ký</Link>
+                <Link style={{fontSize: 16}} to="/signup">Đăng ký</Link>
               </div>
             </form>
           </>

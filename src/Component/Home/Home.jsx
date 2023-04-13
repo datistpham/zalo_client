@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie'
 import React, { createContext } from 'react'
 import { useState } from 'react'
 import { useEffect } from 'react'
@@ -11,10 +12,13 @@ import Profile from './Profile'
 export const HomeContext= createContext()
 const Home = (props) => {
   const {socketState}= useContext(SocketContainerContext)
-  const {data }= useContext(AppContext)
+  const {data, setChange }= useContext(AppContext)
   const [inComingCall, setInComingCall]= useState(false)
   const [senderInfo, setSenderInfo]= useState()
   const [callId, setCallId]= useState()
+  useEffect(()=> {
+    socketState?.emit("join_room_self", {meId: Cookies.get("uid")})
+  }, [socketState])
   useEffect(()=> {
     if(data?._id) {
       socketState?.emit("joinUser", {user: data})
@@ -32,6 +36,11 @@ const Home = (props) => {
 
     })
   }, [socketState, data?._id])
+  useEffect(()=> {
+    socketState?.on("update_profile_user_on", (data)=> {
+      setChange(prev=> !prev)
+    })
+}, [socketState])
   return (
     <HomeContext.Provider value={{setInComingCall, inComingCall}}>
 

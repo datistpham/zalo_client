@@ -8,8 +8,9 @@ import Cookies from "js-cookie";
 import { useState } from "react";
 import { createContext } from "react";
 import Home from "./Component/Home/Home";
-import SocketContainer from "./SocketContainer/SocketContainer";
 import ForgotPassword from "./Component/ForgotPassword/ForgotPassword";
+import NotFound from "./Component/NotFound/NotFound";
+import Container from "./Component/Container/Container";
 // import KeepAlive from "react-activation";
 
 export function useIsMediaPath() {
@@ -22,7 +23,6 @@ const App = () => {
   const [data, setData] = useState();
   const [auth, setAuth] = useState();
   const [change, setChange]= useState(false)
-  
   useEffect(() => {
     (async () => {
       if(Cookies.get("uid")) {
@@ -51,7 +51,7 @@ const App = () => {
   }, [change]);
   return (
       // <KeepAlive id="1234567888" when={()=> false}>
-        <SocketContainer>
+        <Container>
           <AppContext.Provider value={{data, auth,setData, setChange}}>
             <Routes>
               {
@@ -59,6 +59,7 @@ const App = () => {
                   <Route path={"/*"} element={<Home />} />
                   <Route path={"/signup"} element={<Navigate to={"/"} />} />
                   <Route path={"/login"} element={<Navigate to={"/"} />} />
+                  <Route path="*" element={<NotFound />} />
                 </>
               }
               {
@@ -67,11 +68,12 @@ const App = () => {
                   <Route path={"/signup"} element={<Signup />} />
                   <Route path={"/login"} element={<Login />} />
                   <Route path={"/forgot-password"} element={<ForgotPassword />} />
+                  <Route path="*" element={<NotFound />} />
                 </>
               }
             </Routes>
           </AppContext.Provider>
-        </SocketContainer>
+        </Container>
       // </KeepAlive>
 
   );

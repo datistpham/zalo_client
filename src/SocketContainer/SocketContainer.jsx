@@ -11,6 +11,7 @@ const SocketContainer = ({children}) => {
   const [meSocket, setMeSocket]= useState("")
   useEffect(()=> {
     const socket= io(`${SERVER_URL}`, [{transports: ["websocket"]}])
+    // socket.emit("join_room_self", {data: Cookies.get("uid")})
     socket.on("me", (id)=> {
       setMeSocket(id)
     })

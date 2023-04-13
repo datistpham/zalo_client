@@ -16,6 +16,7 @@ import { SocketContainerContext } from '../../SocketContainer/SocketContainer'
 import Cookies from 'js-cookie'
 import _ from 'lodash'
 import update_seen_request from '../../api/update_seen_request'
+import swal from 'sweetalert'
 
 const Profile = () => {  
   const [open, setOpen]= useState(()=> false)
@@ -132,7 +133,9 @@ const SettingsPage= (props)=> {
             <Button className={"fjsdhkjhjkdsdsafdda"} variant="outline-primary"><FiLogOut style={{color: "#2e89ff"}} />&nbsp;Đăng xuất</Button>
           </div>
           <div onClick={()=> {}} style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center"}}>
-            <Button className={"fjsdhkjhjkdsdsafdda"} variant={"outline-danger"}><FiLogOut style={{color: "#fff"}} />&nbsp;Xóa tài khoản</Button>
+            <Button onClick={()=> {
+              swal("Thông báo", "Chức năng đang được phát triển", "error")
+            }} className={"fjsdhkjhjkdsdsafdda"} variant={"outline-danger"}><FiLogOut style={{color: "#fff"}} />&nbsp;Xóa tài khoản</Button>
           </div>
             
         </div>

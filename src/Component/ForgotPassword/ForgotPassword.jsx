@@ -1,36 +1,23 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { BsPhoneFill, BsCode } from "react-icons/bs";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Background from "../Background/Background";
 import styles from "../Signup/Signup.module.sass";
-import * as yup from "yup";
-import { Button, ButtonGroup } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import forgot_password from "../../api/forgot_password";
 import "./style.sass";
 import confirm_code from "../../api/confirm_code";
 import { AiTwotoneLock } from "react-icons/ai";
 import reset_password from "../../api/reset_password";
 import swal from "sweetalert";
+import { useSnackbar } from "notistack";
+import validatePassword from "../../util/validatePassword";
+import { memo } from "react";
 
 const ForgotPassword = (props) => {
   // eslint-disable-next-line
   const navigate = useNavigate();
-  const schema = yup.object().shape({
-    phone: yup
-      .string()
-      .trim()
-      .matches(
-        /^(?:\d{10}|(84|0[3|5|7|8|9])+([0-9]{8})\b|\w+@\w+\.\w{2,3})$/,
-        "Số điện thoại hoặc email không hợp lệ"
-      )
-      .required(),
-    // password: yup.string().min(8, 'Mật khẩu phải trên 8 kí tự').required(),
-  });
-  const { handleSubmit } = useForm({
-    resolver: yupResolver(schema),
-  });
+  const {enqueueSnackbar }= useSnackbar()
 
   const [result, setResult] = useState();
   const [confirmCode, setConfirmCode] = useState();
@@ -38,19 +25,8 @@ const ForgotPassword = (props) => {
   const [phoneNumber, setPhoneNumber] = useState(() => "");
   const [status, setStatus] = useState();
   const [password, setPassword] = useState();
+  // eslint-disable-next-line
   const [confirmPassword, setConfirmPassword] = useState();
-  const onSubmit = async (data) => {
-    // if (pass === repeatPass) {
-    // await dispatch(registerUserRequest(data, () => {
-    //   history.push('/login')
-    // }));
-    // } else {
-    //   setErrorMessage('Mật khẩu không khớp')
-    //   setTimeout(() => {
-    //     setErrorMessage('')
-    //   }, 2000)
-    // }
-  };
 
   return (
     <div className={styles.container}>
@@ -63,7 +39,7 @@ const ForgotPassword = (props) => {
             >
               Quên mật khẩu <br></br>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form action="#">
               {!result && (
                 <>
                   <div className={styles.register_form_input}>
@@ -79,7 +55,12 @@ const ForgotPassword = (props) => {
                   </div>
                   <div className={"fjkadjksjksjdasaa"}>
                     <Button
-                      onClick={() => forgot_password(phoneNumber, setResult)}
+                      onClick={() => {
+                        if(phoneNumber?.trim()?.length <= 0) {
+                          return swal("Thông báo", "Bạn phải điền email để tiếp tục", "error")
+                        }
+                        forgot_password(phoneNumber, setResult)
+                      }}
                     >
                       Gửi
                     </Button>
@@ -116,6 +97,7 @@ const ForgotPassword = (props) => {
                   </div>
                   {status?.verify === true && (
                     <>
+                      <div style={{fontSize: 12, textAlign: "left"}}>Mật khẩu phải có ít nhất 8 ký tự gồm có 1 chữ số, 1 chữ viết hoa, 1 chữ viết thường và 1 ký tự đặc biệt</div>
                       <div className={styles.register_form_input}>
                         <input
                           type="password"
@@ -144,6 +126,23 @@ const ForgotPassword = (props) => {
                         <Button
                           onClick={async () =>
                             {
+                              if(password?.trim()?.length <= 0) {
+                                enqueueSnackbar("Không được để trống mật khẩu", {
+                                  variant: "error"
+                                })
+                              }
+                              else if(password !== confirmPassword) {
+                                  enqueueSnackbar("Xác thực mật khẩu không khớp", {
+                                    variant: "error"
+                                  })
+                                  return
+                              }
+                              else if(validatePassword(password?.trim())=== false) {
+                                  enqueueSnackbar("Mật khẩu quá yếu, mật khẩu phải có ít nhất 8 kí tự, ít nhất một chữ thường, một chữ hoa và một chữ số", {
+                                    variant: "error"
+                                  })
+                                  return 
+                              }
                               await reset_password(phoneNumber, password, navigate)
                               swal("Thông báo", "Bạn đã cập nhật mật khẩu thành công", "success")
                               .then(()=> navigate("/login"))
@@ -158,11 +157,7 @@ const ForgotPassword = (props) => {
                       </div>
                     </>
                   )}
-                  {status?.verify === false && (
-                    <div className={"fjkadjksjksjdasaa"}>
-                      Mã xác thực không chính xác
-                    </div>
-                  )}
+                  <WrongCode status={status} />
                 </div>
               )}
             </form>
@@ -173,5 +168,17 @@ const ForgotPassword = (props) => {
     </div>
   );
 };
+
+export const WrongCode= memo(({status})=> {
+  const {enqueueSnackbar }= useSnackbar()
+
+  return (
+    <div style={{display: "none"}}>
+      {status?.verify === false && enqueueSnackbar("Mã xác thực không chính xác", {
+        variant: "error"
+      })}
+    </div>
+  )
+})
 
 export default ForgotPassword;

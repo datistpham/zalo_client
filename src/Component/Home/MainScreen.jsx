@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { AppContext } from "../../App"
+import NotFound from "../NotFound/NotFound"
 import ChatPage from "./ChatPage"
 // import DefaultPage from "./DefaultPage"
 import FriendPage from "./FriendPage"
@@ -29,6 +30,7 @@ const MainScreen = () => {
         }
         <Route path={"/chat/:idConversation"} element={<ChatPage />} />
         <Route path={"/friends/*"} element={<FriendPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   )

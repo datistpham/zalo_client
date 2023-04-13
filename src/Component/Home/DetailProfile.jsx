@@ -14,17 +14,19 @@ import Toggle from 'react-toggle'
 import "react-toggle/style.css"
 import deaf_user from '../../api/user/deaf_user'
 import { useSnackbar } from 'notistack'
+import { SocketContainerContext } from '../../SocketContainer/SocketContainer'
 
 const DetailProfile = (props) => {
     const { enqueueSnackbar }= useSnackbar()
-    const {data, setData}= useContext(AppContext)
+    const { socketState}= useContext(SocketContainerContext)
+    const {data, setData, setChange }= useContext(AppContext)
     const [updateInfo, setUpdateInfo]= useState(false)
     const [newUsername, setNewUsername]= useState()
+    const [changeAvatar, setChangeAvatar]= useState(false)
     const [newProfilePicture, setNewProfilePicture]= useState()
     const [newGender, setNewGender]= useState()
     const [updateData, setUpdateData]= useState()
     const [newAddress, setNewAddress]= useState()
-    const [changeAvatar, setChangeAvatar]= useState(false)
     const [changeCoverPhoto, setChangeCoverPhoto]= useState(false)
     // eslint-disable-next-line
     const [newDateOfBirth, setNewDateOfBirth]= useState("")
@@ -36,8 +38,8 @@ const DetailProfile = (props) => {
         setNewProfilePicture(()=> data?.profilePicture)
         setNewDateOfBirth(()=> data?.dateOfBirth)
         setNewAddress(()=> data?.address)
-        setNewCoverPhoto(()=> data?.coverPhoto)
-    }, [data?.gender, data?.username, data?.profilePicture, data?.dateOfBirth, data?.address, data?.coverPhoto])
+        setNewCoverPhoto(()=> data?.coverPicture)
+    }, [data?.gender, data?.username, data?.profilePicture, data?.dateOfBirth, data?.address, data?.coverPicture])
     useEffect(()=> {
         if(parseInt(updateData?.status)=== 200) {
             enqueueSnackbar(updateData?.msg, {
@@ -50,8 +52,9 @@ const DetailProfile = (props) => {
             })
         }
     }, [updateData, enqueueSnackbar])
+    
   return (
-    <div className={"dsjdkjfkdlfjdmskdgm"} style={{width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", left: 0, top: 0, background: "rgba(0, 0, 0, 0.3)", zIndex: 10}}>
+    <div className={"dsjdkjfkdlfjdmskdgm"} style={{width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", left: 0, top: 0, background: "rgba(0, 0, 0, 0.3)", zIndex: 999}}>
         <OutsideClickHandler onOutsideClick={()=> props.setOpen(()=> false)}>
             {/*  */}
             {
@@ -89,7 +92,7 @@ const DetailProfile = (props) => {
                     </div>
                     <CoverPhoto setChangeCoverPhoto={setChangeCoverPhoto} newCoverPhoto={newCoverPhoto} setNewCoverPhoto={setNewCoverPhoto} is_edit={true} coverPhoto={data?.coverPicture} />
                     {/*  */}
-                    <Avatar setOpen={()=> {}} avatar={newProfilePicture} newProfilePicture={newProfilePicture} setNewProfilePicture={setNewProfilePicture} is_edit={true} />
+                    <Avatar setChangeAvatar={setChangeAvatar} setOpen={()=> {}} avatar={newProfilePicture} newProfilePicture={newProfilePicture} setNewProfilePicture={setNewProfilePicture} is_edit={true} />
                    {/*  */}
                     <ChangeUserName newUsername={newUsername} setNewUsername={setNewUsername} username={data?.username} />
                    {/*  */}
@@ -108,7 +111,12 @@ const DetailProfile = (props) => {
                                 <button onClick={()=> props.setOpen(()=> false)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#5555", cursor: "pointer", color: "#000", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px"}}>
                                     Hủy
                                 </button>
-                                <button onClick={()=> update_info_user(Cookies.get("uid"), newUsername, newProfilePicture, newGender, setUpdateData, setData, changeAvatar, newCoverPhoto, changeCoverPhoto)} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#2e89ff", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px"}}>
+                                <button onClick={async ()=> {
+                                    const result= await update_info_user(Cookies.get("uid"), newUsername, newProfilePicture, newGender, setUpdateData, setData, changeAvatar, newCoverPhoto, changeCoverPhoto, newAddress)
+                                    if(result?.status=== 200) {
+                                        socketState?.emit("update_profile_user", {meId: Cookies.get("uid")})
+                                    }
+                                }} className={"fjlkdjfklsdjdasas"} style={{display: 'flex', justifyContent:"center", alignItems: "center", background: "#2e89ff", cursor: "pointer", color: "#fff", fontWeight: 600, border: "none", outline: "none", borderRadius: 5, padding: "10px 30px"}}>
                                     Cập nhật
                                 </button>
                             </>
@@ -123,6 +131,7 @@ const DetailProfile = (props) => {
 
 const AdvancedSettings= (props)=> {
     const [check, setCheck]= useState(false)
+    const {setChange }= useContext(AppContext)
     useEffect(()=> {
         setCheck(props?.user?.isDeaf || false)
     }, [props?.user?.isDeaf])
@@ -134,6 +143,7 @@ const AdvancedSettings= (props)=> {
                 id='cheese-status'
                 checked={check}
                 onChange={()=> {
+                    setChange(prev=> !prev)
                     setCheck(prev=> !prev)
                     deaf_user(!check)
                 }}     
@@ -160,6 +170,7 @@ export const ProfileInfo= (props)=> {
             <div style={{fontWeight: 600, marginBottom: 16}}>Thông tin cá nhân</div>
             <ItemProfileInfo title={"Điện thoại:"} info={props?.user?.phoneNumber} />
             <ItemProfileInfo title={"Giới tính:"} info={props?.user?.gender=== true? "Nam" : "Nữ"} />
+            <ItemProfileInfo title={"Địa chỉ:"} info={props?.user?.address} />
         </div>
     )
 }

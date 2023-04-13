@@ -11,9 +11,10 @@ import { useEffect, useContext, memo, useState } from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
 import {AiFillLike } from "react-icons/ai"
 import { Link, useParams } from "react-router-dom";
+import { useRef } from "react";
 
 const ContentConversation = (props) => {
-    const {idConversation}= useParams()
+    const {idConversation }= useParams()
     const {socketState}= useContext(SocketContainerContext)
     return (
       <div
@@ -27,7 +28,7 @@ const ContentConversation = (props) => {
         >
             <ScrollToBottom className={"fjkdjsijaskldjakjdsk"} mode="bottom">
                 {
-                    _.orderBy(props?.listMessage, o=> moment(o.createdAt).valueOf(), 'asc')?.filter(item=> item.roomId === idConversation)?.map((item)=> <ComponentMessage socketState={socketState} key={item?.key} {...item} keyId={item?.key} />)
+                    _.orderBy(props?.listMessage, o=> moment(o.createdAt).valueOf(), 'asc')?.filter(item=> item.roomId === idConversation)?.map((item)=> <ComponentMessage socketState={socketState} key={item?.key} {...item} keyId={item?.key} idConversation={idConversation} />)
                 }
                 <div className="_3ybTi_as" name="main-chat" style={{position: "relative"}}></div>
             </ScrollToBottom>
@@ -39,26 +40,31 @@ const ContentConversation = (props) => {
   export default memo(ContentConversation)
 
 const ComponentMessage= (props)=> {
+    const {idConversation }= props
     const [open, setOpen]= useState(false)
     const [reValue, setReValue]= useState(undefined)
     useEffect(()=> {
         props?.socketState?.on("recall_message_server", (data)=> {
-            setReValue(data)
-            recall_message(props?.keyId, data?.message)
+            if(props?.keyId === data?.keyId) {
+                setReValue(data)
+                recall_message(props?.keyId, data?.message)
+            }
         })
         props?.socketState?.on("remove_message_server", (data)=> {
-            setReValue(data)
-            remove_message(props?.keyId, data?.message)
+            if(props?.keyId === data?.keyId) {
+                setReValue(data)
+                remove_message(props?.keyId, data?.message)
+            }
         })
-    }, [props?.socketState, props?.keyId])
+    }, [props?.keyId])
     
     const recallMessage= ()=> {
-        props?.socketState?.emit("recall_message", {idConversation: props?.conversation?._id, kindof: "recall", idMessage: props?._id, keyId: props?.keyId})
+        props?.socketState?.emit("recall_message", {idConversation: idConversation, kindof: "recall", idMessage: props?._id, keyId: props?.keyId})
         
     }
 
     const removeMessage= ()=> {
-        props?.socketState?.emit("remove_message", {idConversation: props?.conversation?._id, kindof: "remove", idMessage: props?._id, keyId: props?.keyId})
+        props?.socketState?.emit("remove_message", {idConversation: idConversation, kindof: "remove", idMessage: props?._id, keyId: props?.keyId})
         props?.socketState?.on("remove_message_server", (data)=> {
             setReValue(data)
             remove_message(props?.keyId, data?.message)
@@ -70,9 +76,12 @@ const ComponentMessage= (props)=> {
             <div className={"dfkdsdhsjkfhjkhdadss"} style={{position: "relative"}}>
                 <Avatar {...props} />
                 <Text {...props} setOpen={setOpen} reValue={reValue} />
-                <div style={{position: "relative"}}>
-                    {open=== true && <OptionComponentMessage recallMessage={recallMessage} removeMessage={removeMessage} sender={props?.sender?._id} me={Cookies.get("uid")} />}
-                </div>
+                {
+                    props?.sender?._id === Cookies.get("uid") && 
+                    <div style={{position: "relative"}}>
+                        {open=== true && <OptionComponentMessage recallMessage={recallMessage} removeMessage={removeMessage} sender={props?.sender?._id} me={Cookies.get("uid")} />}
+                    </div>
+                }
             </div>
         </div>
     )
@@ -117,7 +126,7 @@ const Avatar= (props)=> {
 
 const Text= (props)=> {
     return (
-        <div className={`fjkdjskfhjkdsajkaas ${props?.sender?._id === Cookies.get("uid") ? "sjfshjkaljsaasasarseas" : "ayuehajkshakjfhdasas"}`} style={{}}>
+        <div className={`fjkdjskfhjkdsajkaas ${props?.sender?._id === Cookies.get("uid") ? "sjfshjkaljsaasasarseas" : "ayuehajkshakjfhdasas"}`}>
             {
                 props?.reValue && props?.keyId === props?.reValue?.keyId ? <>
                 {
@@ -145,8 +154,21 @@ const Text= (props)=> {
                 {
                     props?.type_message=== "like" && <AiFillLike size={100} color={"#2e89ff"} />
                 }
+                {
+                    props?.type_message=== "text_to_voice" && <CompoentViewTextToVoice {...props} />
+                }
             </>
             }
         </div>
+    )
+}
+
+const CompoentViewTextToVoice= (props)=> {
+    const refAudio= useRef()
+    return (
+        <>
+            <div onClick={()=> refAudio.current.play()} className={"yhsihdukhdkshdasas"} style={{maxWidth: "100%", wordBreak: "break-word", background: "#ffb300", padding: 5, borderRadius: 5, cursor: "pointer"}}>{props?.extend_text}</div>
+            <audio ref={refAudio} controls={false} src={props?.message} />
+        </>
     )
 }

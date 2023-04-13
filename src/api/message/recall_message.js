@@ -14,7 +14,7 @@ const recall_message = async(keyId, message) => {
         }
     })
     const result= await res.data
-    return console.log(result)
+    return result
 }
 
 export default recall_message

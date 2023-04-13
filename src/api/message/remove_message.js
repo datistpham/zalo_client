@@ -14,7 +14,7 @@ const remove_message = async(keyId, message) => {
         }
     })
     const result= await res.data
-    return console.log(result)
+    return result
 }
 
 export default remove_message
