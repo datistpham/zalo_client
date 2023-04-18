@@ -13,6 +13,7 @@ import swal from "sweetalert";
 import { useSnackbar } from "notistack";
 import validatePassword from "../../util/validatePassword";
 import { memo } from "react";
+import { BiHide, BiShowAlt } from "react-icons/bi";
 
 const ForgotPassword = (props) => {
   // eslint-disable-next-line
@@ -27,6 +28,8 @@ const ForgotPassword = (props) => {
   const [password, setPassword] = useState();
   // eslint-disable-next-line
   const [confirmPassword, setConfirmPassword] = useState();
+  const [showPassword, setShowPassword]= useState(false)
+  const [showConfirmPassword, setShowConfirmPassword]= useState(false)
 
   return (
     <div className={styles.container}>
@@ -100,7 +103,7 @@ const ForgotPassword = (props) => {
                       <div style={{fontSize: 12, textAlign: "left"}}>Mật khẩu phải có ít nhất 8 ký tự gồm có 1 chữ số, 1 chữ viết hoa, 1 chữ viết thường và 1 ký tự đặc biệt</div>
                       <div className={styles.register_form_input}>
                         <input
-                          type="password"
+                          type={showPassword=== false ? "password" : "text"}
                           placeholder="Mật khẩu"
                           required
                           onChange={(e) => setPassword(e.target.value)}
@@ -109,10 +112,20 @@ const ForgotPassword = (props) => {
                           {" "}
                           <AiTwotoneLock />
                         </span>
+                        <span style={{position: "absolute", left: "100%", top: "50%", transform: "translate(-100%, -50%)"}}>
+                        {
+                          showPassword=== false && <BiHide onClick={()=> setShowPassword(true)} />
+                        }
+                        {
+                          showPassword=== true && 
+                          <BiShowAlt onClick={()=> setShowPassword(false)} />
+                        }
+
+                </span>
                       </div>
                       <div className={styles.register_form_input}>
                         <input
-                          type="password"
+                          type={showConfirmPassword=== false ? "password" : "text"}
                           placeholder="Nhập lại mật khẩu"
                           required
                           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -121,6 +134,16 @@ const ForgotPassword = (props) => {
                           {" "}
                           <AiTwotoneLock />
                         </span>
+                        <span style={{position: "absolute", left: "100%", top: "50%", transform: "translate(-100%, -50%)"}}>
+                        {
+                          showConfirmPassword=== false && <BiHide onClick={()=> setShowConfirmPassword(true)} />
+                        }
+                        {
+                          showConfirmPassword=== true && 
+                          <BiShowAlt onClick={()=> setShowConfirmPassword(false)} />
+                        }
+
+                </span>
                       </div>
                       <div className={"fjkadjksjksjdasaa"}>
                         <Button

@@ -1,6 +1,7 @@
 {
   "name": "zalo_client_rebuild",
   "version": "0.1.0",
+  "main": "main.js",
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^2.9.10",
@@ -48,9 +49,18 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "electron": "electron main.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "package": "yarn run build && electron-packager . my-electron-app --platform=win32 --arch=x64 --out=dist --ignore=dist --ignore=node_modules"
+  },
+  "build": {
+    "appId": "com.example.my-electron-app",
+    "productName": "My Electron App",
+    "directories": {
+      "output": "dist"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -69,5 +79,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "electron": "^24.1.1",
+    "electron-is-dev": "^2.0.0"
   }
 }

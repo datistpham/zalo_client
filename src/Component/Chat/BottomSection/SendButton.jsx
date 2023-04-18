@@ -28,7 +28,7 @@ const SendButton = (props) => {
   const sendMessageTextToVoice= async ()=> {
     if(props?.contentText.length > 0) {
       const voiceResult= await text_to_voice(props?.contentText)
-      socketState.emit("message_from_client", {message: voiceResult, roomId: idConversation, sender: data, type_message: "text_to_voice", key: v4(), createdAt: new Date(), extend_text: props?.contentText})
+      socketState.emit("message_from_client", {message: voiceResult, roomId: idConversation, sender: data, type_message: "text_to_voice", key: v4(), createdAt: new Date(), extend_text: props?.contentText, autoplaying: 0})
       socketState.emit("typing_from_client_off", {roomId: idConversation, data: data, typing: false})
       post_message(Cookies.get("uid"), idConversation, v4(), voiceResult, idConversation, "text_to_voice", "", props?.contentText)
       update_last_conversation_id(idConversation)

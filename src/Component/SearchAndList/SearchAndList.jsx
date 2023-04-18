@@ -21,6 +21,8 @@ import CoverPhoto from '../Home/CoverPhoto'
 import { NameProfile, ProfileInfo } from '../Home/DetailProfile'
 import List from './List'
 import ListFriend, { ListFriendItem } from './ListFriend'
+import get_friend_status from '../../api/friend/request_status'
+import cancel_request_make_friend_from_me from '../../api/friend/cancel_request_make_friend_from_me'
 
 const SearchAndList = (props) => {
   const [searchQuery, setSearchQuery]= useState(()=> "")
@@ -85,9 +87,19 @@ const CreateNewGroup= (props)=> {
 }
 
 export const PopupAddFriends= (props)=> {
+    const [change, setChange]= useState(false)
     const [phoneNumber, setPhoneNumber]= useState()
     const [data, setData]= useState({exist: -1})
     const [dataSendRequest, setDataSendRequest]= useState()
+    const [friendStatus, setFriendStatus]= useState()
+    useEffect(() => {
+        (async () => {
+          const result = await get_friend_status(
+           data?._id
+          );
+          return setFriendStatus(result);
+        })();
+      }, [data?._id, change])
     return (
         <div className={"fkjldsklkdsslaskdsaa"} style={{width: "100%", height: "100%", position: "fixed", top: 0, left: 0, background: "rgba(0 ,0 ,0,0.3)", zIndex: 12, display: "flex", justifyContent: "center", alignItems: "center"}}>
             <OutsideClickHandler onOutsideClick={()=> props.setOpen((()=> false))}>
@@ -105,30 +117,38 @@ export const PopupAddFriends= (props)=> {
                                 <Avatar avatar={data?.profilePicture} />
                                 <NameProfile username={data?.username} />
                                 <div style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 16}}>
-                                    {
+                                    {/* {
                                         data?._id !== Cookies.get("uid") && 
                                         <Button onClick={()=> {}} variant="secondary">Nhắn tin</Button>
-                                    }
+                                    } */}
                                 </div>
                                 <ProfileInfo user={data} />
                                 <br />
                                 <div style={{width: "100%", display: "flex", flexDirection: "row-reverse", alignItems: "center", gap: 16}}>
-                                    {
+                                    {/* {
                                         data?._id !== Cookies.get("uid") && 
                                         <Button onClick={()=> send_request_make_friend_by_me(data?._id, setDataSendRequest)} variant="primary">Kết bạn</Button>
                                     }
                                     
+                                    <Button onClick={()=> props.setOpen(()=> false)} variant="secondary">Đóng</Button> */}
+                                    {
+                                        friendStatus?.request=== true && <Button onClick={async ()=> {
+                                            await cancel_request_make_friend_from_me(data?._id, setChange);
+                                            setFriendStatus(prev=> ({...prev, request: false}))
+                                            setChange(prev=> !prev)
+                                        }}>Hủy yêu cầu</Button>
+                                    }
+                                    {
+                                        friendStatus?.request=== false && 
+                                        data?._id !== Cookies.get("uid") && 
+                                        <Button onClick={()=> {send_request_make_friend_by_me(data?._id, setDataSendRequest);setFriendStatus(prev=> ({...prev, request: true}))}} variant="primary">Kết bạn</Button>
+                                    }
                                     <Button onClick={()=> props.setOpen(()=> false)} variant="secondary">Đóng</Button>
                                 </div>
                                 {
-                                    dataSendRequest?.request=== true && dataSendRequest?.duplicate=== true && <div style={{fontSize: 14}}>{"Bạn đã gửi yêu cầu kêt bạn với người này"}</div>
-                                }
-                                {
-                                    dataSendRequest?.request=== true && dataSendRequest?.duplicate=== false && <div style={{fontSiz: 14}}>{"Gửi yêu cầu kết bạn thành công"}</div>
-                                }
-                                {
                                     dataSendRequest?.request=== false && dataSendRequest?.duplicate=== false && <div style={{fontSi: 14}}>{"Có lỗi xảy ra, vui lòng thử lại sau"}</div>
                                 }
+
                             </>
                         }
                         {

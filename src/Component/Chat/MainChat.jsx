@@ -60,6 +60,7 @@ const MainChat = (props) => {
   useEffect(() => {
     socketState.on("broadcast_to_all_user_in_room", (data) => {
       setListMessage((prev) => [...prev, data]);
+     
     });
   }, [socketState]);
   return (

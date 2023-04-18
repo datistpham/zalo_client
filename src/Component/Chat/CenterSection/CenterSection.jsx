@@ -165,6 +165,27 @@ const Text= (props)=> {
 
 const CompoentViewTextToVoice= (props)=> {
     const refAudio= useRef()
+    const [autoplay, setAutoplay]= useState(props?.autoplaying)
+    useEffect(()=> {
+        setAutoplay(()=> props?.autoplaying)
+    }, [props?.autoplaying])
+
+    useEffect(()=> {
+        
+        if(autoplay=== 0 && props?.sender?._id !== Cookies.get("uid")) {
+            const timeout= setTimeout(()=> {
+                refAudio.current.play()
+            }, 1000)
+            const timeout2= setTimeout(()=> {
+                setAutoplay(()=> 1)
+            }, 1000)
+            return ()=> {
+                clearTimeout(timeout)
+                clearTimeout(timeout2)
+            }
+        }
+
+    }, [])
     return (
         <>
             <div onClick={()=> refAudio.current.play()} className={"yhsihdukhdkshdasas"} style={{maxWidth: "100%", wordBreak: "break-word", background: "#ffb300", padding: 5, borderRadius: 5, cursor: "pointer"}}>{props?.extend_text}</div>

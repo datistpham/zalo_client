@@ -70,11 +70,12 @@ const List = (props) => {
     const options = {
         keys: [
             { name: 'label', getFn: (book) => book.label },
-            { name: 'username', getFn: (book) => book.member?.map(item=> item.username) }
+            // { name: 'username', getFn: (book) => book.member?.map(item=> item.username) }
           ]
       };
       
       const fuse = new Fuse(data, options);
+      console.log(data)
       // Change the pattern
   return (
     <div className={"skdjkfjdkdjsdas"}style={{width:" 100%", height: "calc(100% - 60px)", overflow: "auto"}}>
